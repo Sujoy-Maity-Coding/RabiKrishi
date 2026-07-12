@@ -1,0 +1,146 @@
+[
+  {
+    "disease_name": "Healthy",
+    "severity_threshold": "None",
+    "organic_treatment": "No treatment needed",
+    "chemical_treatment": "No treatment needed",
+    "recommended_medicine_organic": "NA",
+    "recommended_medicine_chemical": "NA",
+    "reinspection_gap_days": 5
+  },
+  {
+    "disease_name": "Bacterial Leaf Blight",
+    "severity_threshold": "Low",
+    "organic_treatment": "Neem oil spray 5ml/litre every 3 days",
+    "chemical_treatment": "Copper oxychloride spray",
+    "recommended_medicine_organic": "Neem oil 1500ppm",
+    "recommended_medicine_chemical": "Copper oxychloride 50% WP",
+    "reinspection_gap_days": 3
+  },
+  {
+    "disease_name": "Bacterial Leaf Blight",
+    "severity_threshold": "Medium",
+    "organic_treatment": "Cow urine + neem extract spray",
+    "chemical_treatment": "Streptocycline + Copper oxychloride combination spray",
+    "recommended_medicine_organic": "Panchagavya + Neem extract",
+    "recommended_medicine_chemical": "Streptocycline 90% + Copper oxychloride",
+    "reinspection_gap_days": 2
+  },
+  {
+    "disease_name": "Bacterial Leaf Blight",
+    "severity_threshold": "High",
+    "organic_treatment": "Intensive neem + Pseudomonas fluorescens application",
+    "chemical_treatment": "Streptocycline + Copper oxychloride + field drainage",
+    "recommended_medicine_organic": "Pseudomonas fluorescens bio-agent",
+    "recommended_medicine_chemical": "Streptocycline 90% SP",
+    "reinspection_gap_days": 1
+  },
+  {
+    "disease_name": "Brown Spot",
+    "severity_threshold": "Low",
+    "organic_treatment": "Neem seed kernel extract spray",
+    "chemical_treatment": "Mancozeb spray",
+    "recommended_medicine_organic": "Neem seed kernel extract 5%",
+    "recommended_medicine_chemical": "Mancozeb 75% WP",
+    "reinspection_gap_days": 3
+  },
+  {
+    "disease_name": "Brown Spot",
+    "severity_threshold": "Medium",
+    "organic_treatment": "Trichoderma viride soil application + neem spray",
+    "chemical_treatment": "Propiconazole spray",
+    "recommended_medicine_organic": "Trichoderma viride bio-fungicide",
+    "recommended_medicine_chemical": "Propiconazole 25% EC",
+    "reinspection_gap_days": 2
+  },
+  {
+    "disease_name": "Brown Spot",
+    "severity_threshold": "High",
+    "organic_treatment": "Intensive Trichoderma + balanced potash correction",
+    "chemical_treatment": "Propiconazole + Carbendazim combination",
+    "recommended_medicine_organic": "Trichoderma viride + Panchagavya",
+    "recommended_medicine_chemical": "Propiconazole 25% EC",
+    "reinspection_gap_days": 1
+  },
+  {
+    "disease_name": "Leaf Blast",
+    "severity_threshold": "Low",
+    "organic_treatment": "Neem oil spray",
+    "chemical_treatment": "Tricyclazole spray",
+    "recommended_medicine_organic": "Neem oil 1500ppm",
+    "recommended_medicine_chemical": "Tricyclazole 75% WP",
+    "reinspection_gap_days": 3
+  },
+  {
+    "disease_name": "Leaf Blast",
+    "severity_threshold": "Medium",
+    "organic_treatment": "Pseudomonas fluorescens spray",
+    "chemical_treatment": "Tricyclazole + Carbendazim spray",
+    "recommended_medicine_organic": "Pseudomonas fluorescens",
+    "recommended_medicine_chemical": "Tricyclazole 75% WP",
+    "reinspection_gap_days": 2
+  },
+  {
+    "disease_name": "Leaf Blast",
+    "severity_threshold": "High",
+    "organic_treatment": "Intensive bio-control + reduce nitrogen",
+    "chemical_treatment": "Tricyclazole + Isoprothiolane combination",
+    "recommended_medicine_organic": "Pseudomonas fluorescens + Trichoderma",
+    "recommended_medicine_chemical": "Isoprothiolane 40% EC",
+    "reinspection_gap_days": 1
+  },
+  {
+    "disease_name": "Sheath Blight",
+    "severity_threshold": "Low",
+    "organic_treatment": "Neem cake soil application",
+    "chemical_treatment": "Hexaconazole spray",
+    "recommended_medicine_organic": "Neem cake extract",
+    "recommended_medicine_chemical": "Hexaconazole 5% EC",
+    "reinspection_gap_days": 3
+  },
+  {
+    "disease_name": "Sheath Blight",
+    "severity_threshold": "Medium",
+    "organic_treatment": "Trichoderma viride application",
+    "chemical_treatment": "Validamycin spray",
+    "recommended_medicine_organic": "Trichoderma viride",
+    "recommended_medicine_chemical": "Validamycin 3% L",
+    "reinspection_gap_days": 2
+  },
+  {
+    "disease_name": "Sheath Blight",
+    "severity_threshold": "High",
+    "organic_treatment": "Intensive Trichoderma + canopy thinning",
+    "chemical_treatment": "Validamycin + Hexaconazole combination",
+    "recommended_medicine_organic": "Trichoderma viride + Pseudomonas",
+    "recommended_medicine_chemical": "Validamycin 3% L",
+    "reinspection_gap_days": 1
+  },
+  {
+    "disease_name": "Tungro",
+    "severity_threshold": "Low",
+    "organic_treatment": "Remove infected plants + neem spray for vector",
+    "chemical_treatment": "Imidacloprid spray for green leafhopper vector",
+    "recommended_medicine_organic": "Neem oil for vector control",
+    "recommended_medicine_chemical": "Imidacloprid 17.8% SL",
+    "reinspection_gap_days": 3
+  },
+  {
+    "disease_name": "Tungro",
+    "severity_threshold": "Medium",
+    "organic_treatment": "Rogue infected plants + botanical vector control",
+    "chemical_treatment": "Imidacloprid + Thiamethoxam combination",
+    "recommended_medicine_organic": "Neem + Karanja oil mix",
+    "recommended_medicine_chemical": "Thiamethoxam 25% WG",
+    "reinspection_gap_days": 2
+  },
+  {
+    "disease_name": "Tungro",
+    "severity_threshold": "High",
+    "organic_treatment": "Field-wide roguing + intensive vector management",
+    "chemical_treatment": "Imidacloprid + field-level vector eradication",
+    "recommended_medicine_organic": "Neem-Karanja bio-pesticide blend",
+    "recommended_medicine_chemical": "Imidacloprid 17.8% SL",
+    "reinspection_gap_days": 1
+  }
+]
