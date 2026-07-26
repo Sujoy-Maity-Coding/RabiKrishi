@@ -15,10 +15,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.sujoy.smartfarm.Domain.model.DailyFarmUpdate
 import com.sujoy.smartfarm.Presentation.Screens.FarmList.toDateString
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.Presentation.Utils.FarmDetails.translatedLeafColor
+import com.sujoy.smartfarm.Presentation.Utils.FarmDetails.translatedSoilMoisture
+import com.sujoy.smartfarm.R
 
 @Composable
 fun DailyUpdateCard(
@@ -31,18 +36,10 @@ fun DailyUpdateCard(
 
 ){
     val status = when {
-
-        update.pestFound ->
-            "🔴 Pest Detected"
-
-        update.diseaseFound ->
-            "🔴 Disease Found"
-
-        update.leafColor == "Yellow" ->
-            "🟡 Needs Attention"
-
-        else ->
-            "🟢 Healthy"
+        update.pestFound -> stringResource(R.string.status_pest_detected)
+        update.diseaseFound -> stringResource(R.string.status_disease_found)
+        update.leafColor == "Yellow" -> stringResource(R.string.status_needs_attention)
+        else -> stringResource(R.string.status_healthy)
     }
     Card(modifier = modifier) {
 
@@ -67,7 +64,7 @@ fun DailyUpdateCard(
                     .height(150.dp)
             )
 
-            Text("Day ${update.day}")
+            Text(localizedDigits(stringResource(R.string.day_label, update.day)))
 
             Text(
                 update.date.toDateString()
@@ -82,7 +79,7 @@ fun DailyUpdateCard(
 
                 Text("🌱")
 
-                Text("${update.plantHeight} cm")
+                Text("${localizedDigits("${update.plantHeight}")} cm")
             }
 
             Row(
@@ -94,7 +91,7 @@ fun DailyUpdateCard(
 
                 Text("🍃")
 
-                Text(update.leafColor)
+                Text(translatedLeafColor(update.leafColor))
             }
 
             Row(
@@ -106,7 +103,7 @@ fun DailyUpdateCard(
 
                 Text("💧")
 
-                Text(update.soilMoisture)
+                Text(translatedSoilMoisture(update.soilMoisture))
             }
 
             Row(
@@ -118,16 +115,7 @@ fun DailyUpdateCard(
 
                 Text("🐛")
 
-                Text(
-
-                    if(update.pestFound)
-
-                        "Pest Found"
-
-                    else
-
-                        "No Pest"
-                )
+                Text(if (update.pestFound) stringResource(R.string.pest_found_label) else stringResource(R.string.no_pest_label))
             }
             HorizontalDivider()
 
@@ -141,7 +129,7 @@ fun DailyUpdateCard(
 
             ) {
 
-                Text("See Full Analysis →")
+                Text(stringResource(R.string.see_full_analysis_btn))
             }
         }
     }

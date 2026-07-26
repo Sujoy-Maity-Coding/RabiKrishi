@@ -10,6 +10,7 @@ import com.sujoy.smartfarm.Domain.model.DailyFarmUpdate
 import com.sujoy.smartfarm.Domain.model.Expense.Expense
 import com.sujoy.smartfarm.Domain.model.Farm
 import com.sujoy.smartfarm.Domain.model.FarmerData
+import com.sujoy.smartfarm.Domain.model.Phase
 import com.sujoy.smartfarm.Domain.model.TaskItem
 import kotlinx.coroutines.flow.Flow
 
@@ -31,6 +32,9 @@ interface Repo {
 
     ): Flow<ResultState<String>>
 
+    fun getFarmerProfile(): Flow<ResultState<FarmerData>>
+    fun updateFarmerProfile(name: String, phoneNumber: String): Flow<ResultState<String>>
+
     fun isUserLoggedIn(): Boolean
 
     fun logout()
@@ -48,7 +52,7 @@ interface Repo {
     ): Flow<ResultState<List<Crop>>>
 
     fun getCropMethod(
-        cropId: String
+        cropId: String, languageCode: String
     ): Flow<ResultState<CropMethod>>
 
     fun createFarm(
@@ -68,7 +72,7 @@ interface Repo {
     ): Flow<ResultState<Farm>>
 
     fun getCropSchedule(
-        cropId: String
+        cropId: String, languageCode: String
     ): Flow<ResultState<CropSchedule>>
 
     fun updateTaskStatus(
@@ -129,4 +133,31 @@ interface Repo {
         farmId: String
 
     ): Flow<ResultState<List<Expense>>>
+
+    suspend fun getMyFarmsOnce(): List<Farm>
+
+    suspend fun getCropScheduleOnce(
+        cropId: String
+    ): CropSchedule?
+
+    suspend fun getFarmSchedule(
+        farmId: String
+    ): CropSchedule?
+
+    suspend fun saveFarmSchedule(
+        farmId: String,
+        schedule: CropSchedule
+    ): Boolean
+
+    suspend fun appendPhaseToFarmSchedule(
+        farmId: String,
+        newPhase: Phase
+    ): Boolean
+
+    fun getFarmScheduleFlow(
+        farmId: String
+    ): Flow<ResultState<CropSchedule>>
+
+    // Repo.kt
+    fun generateFarmId(): String
 }

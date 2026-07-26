@@ -11,9 +11,9 @@ class GetCropScheduleUseCase @Inject constructor(
 
     operator fun invoke(
 
-        cropId: String
+        cropId: String, languageCode: String
 
     ) = repo.getCropSchedule(
-        cropId
+        cropId, languageCode
     )
 }

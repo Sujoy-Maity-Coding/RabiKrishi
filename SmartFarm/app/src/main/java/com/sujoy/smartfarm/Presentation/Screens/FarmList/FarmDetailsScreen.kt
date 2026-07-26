@@ -65,6 +65,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -77,8 +79,13 @@ import com.sujoy.smartfarm.Presentation.Components.Dashboard.FarmTopBar
 import com.sujoy.smartfarm.Presentation.Components.FarmList.SectionCard
 import com.sujoy.smartfarm.Presentation.Components.FarmList.phaseIcon
 import com.sujoy.smartfarm.Presentation.Navigation.FarmerRoutes
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedCropName
 import com.sujoy.smartfarm.Presentation.Utils.DateUtils
+import com.sujoy.smartfarm.Presentation.Utils.FarmMethod.translatedLandArea
+import com.sujoy.smartfarm.Presentation.Utils.FarmMethod.translatedMethodLabelFromString
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.GreenContainer
 import com.sujoy.smartfarm.ui.theme.GreenOnContainer
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
@@ -118,6 +125,8 @@ fun FarmDetailsScreen(
     val farmState           by appViewModel.farmDetailsState.collectAsState()
     val completedTasksState by appViewModel.completedTasksState.collectAsState()
     val latestAIState by appViewModel.latestAIState.collectAsState()
+    val continueState by appViewModel.continueScheduleState.collectAsState()
+    val currentLangCode = LocalConfiguration.current.locales[0].language
     val inspectionRemainingDays = remember(latestAIState.update) {
 
         val latest = latestAIState.update
@@ -141,10 +150,10 @@ fun FarmDetailsScreen(
     }
 
     LaunchedEffect(Unit) {
-        appViewModel.getCropSchedule(cropId)
         appViewModel.getFarmById(farmId)
         appViewModel.getCompletedTasks(farmId)
         appViewModel.getLatestAIStatus(farmId)
+        appViewModel.getFarmSchedule(farmId)
     }
 
     val farm   = farmState.farm
@@ -155,6 +164,12 @@ fun FarmDetailsScreen(
     } ?: 0
 
     val phases    = state.schedule?.phases ?: emptyList()
+
+    LaunchedEffect(phases.size, farmId, cropId) {
+        if (phases.isNotEmpty()) {
+            appViewModel.checkScheduleComplete(farmId, cropId)
+        }
+    }
     val totalDays = phases.maxOfOrNull { it.endDay }?.coerceAtLeast(1) ?: 1
 
     val currentPhase = phases.firstOrNull {
@@ -230,7 +245,7 @@ fun FarmDetailsScreen(
         containerColor = OffWhite,
         topBar = {
             FarmTopBar(
-                title = "Farm details",
+                title = stringResource(R.string.farm_details_title),
                 showBack = true,
                 onBack = { navController.popBackStack() }
             )
@@ -256,7 +271,7 @@ fun FarmDetailsScreen(
                             contentAlignment = Alignment.Center
                         ) { Text("🌾", fontSize = 32.sp) }
                         CircularProgressIndicator(color = GreenPrimary, strokeWidth = 3.dp)
-                        Text("Loading farm details…", fontSize = 13.sp, color = TextSecondary)
+                        Text(stringResource(R.string.loading_farm_details), fontSize = 13.sp, color = TextSecondary)
                     }
                 }
 
@@ -268,7 +283,7 @@ fun FarmDetailsScreen(
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Text("⚠️", fontSize = 40.sp)
-                        Text("Failed to load", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                        Text(stringResource(R.string.failed_to_load), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
                         Text(state.error, fontSize = 12.sp, color = TextSecondary)
                     }
                 }
@@ -306,9 +321,7 @@ fun FarmDetailsScreen(
                                                     .padding(horizontal = 10.dp, vertical = 5.dp)
                                             ) {
                                                 Text(
-                                                    "${com.sujoy.smartfarm.Presentation.Components.FarmList.methodEmoji(
-                                                        farm?.farmingMethod!!
-                                                    )} ${farm?.farmingMethod ?: ""}",
+                                                    "${com.sujoy.smartfarm.Presentation.Components.FarmList.methodEmoji(farm?.farmingMethod!!)} ${translatedMethodLabelFromString(farm?.farmingMethod ?: "")}",
                                                     fontSize = 11.sp,
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = WhitePure
@@ -325,17 +338,21 @@ fun FarmDetailsScreen(
                                                         .clip(CircleShape)
                                                         .background(Color(0xFF69F0AE))
                                                 )
-                                                Text("Day ${currentDay+1}", fontSize = 10.sp, color = WhitePure.copy(alpha = 0.8f))
+                                                Text(
+                                                    localizedDigits(stringResource(R.string.day_label, currentDay + 1)),
+                                                    fontSize = 10.sp,
+                                                    color = WhitePure.copy(alpha = 0.8f)
+                                                )
                                             }
                                         }
                                         Text(
-                                            farm?.cropName ?: "",
+                                            translatedCropName(farm?.cropName ?: ""),
                                             fontSize = 22.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = WhitePure
                                         )
                                         Text(
-                                            "${farm?.farmName ?: ""}  •  ${farm?.landArea ?: ""}",
+                                            "${farm?.farmName ?: ""}  •  ${translatedLandArea(farm?.landArea ?: "")}",
                                             fontSize = 12.sp,
                                             color = WhitePure.copy(alpha = 0.75f)
                                         )
@@ -354,7 +371,7 @@ fun FarmDetailsScreen(
                                 ) {
                                     Column {
                                         Text(
-                                            "Crop progress",
+                                            stringResource(R.string.crop_progress_label),
                                             fontSize = 13.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = TextPrimary
@@ -377,12 +394,8 @@ fun FarmDetailsScreen(
                                             modifier = Modifier.padding(top = 1.dp)
                                         )
                                         Text(
-
-                                            "$completedTasksCount / $totalTasks Tasks Completed",
-
-                                            fontSize = 11.sp,
-
-                                            color = TextSecondary
+                                            localizedDigits(stringResource(R.string.tasks_completed_label, completedTasksCount, totalTasks)),
+                                            fontSize = 11.sp, color = TextSecondary
                                         )
                                     }
                                     // Big percentage badge
@@ -395,7 +408,7 @@ fun FarmDetailsScreen(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(
-                                                "$progressPct%",
+                                                localizedDigits("$progressPct%"),
                                                 fontSize = 18.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = accent
@@ -432,16 +445,20 @@ fun FarmDetailsScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text("Start", fontSize = 10.sp, color = TextSecondary)
+                                    Text(stringResource(R.string.start_label), fontSize = 10.sp, color = TextSecondary)
                                     if (accent != null) {
                                         Text(
-                                            currentPhase?.title ?: "Completed",
+                                            currentPhase?.title ?: stringResource(R.string.completed_label),
                                             fontSize = 10.sp,
                                             color = accent,
                                             fontWeight = FontWeight.SemiBold
                                         )
                                     }
-                                    Text("Day ${totalDays+1}", fontSize = 10.sp, color = TextSecondary)
+                                    Text(
+                                        localizedDigits(stringResource(R.string.day_label, totalDays + 1)),
+                                        fontSize = 10.sp,
+                                        color = TextSecondary
+                                    )
                                 }
                             }
                         }
@@ -471,12 +488,12 @@ fun FarmDetailsScreen(
                                     }
                                     Column {
                                         Text(
-                                            "Current phase",
+                                            stringResource(R.string.current_phase_label),
                                             fontSize = 11.sp,
                                             color = TextSecondary
                                         )
                                         Text(
-                                            currentPhase?.title ?: "Harvest complete",
+                                            currentPhase?.title ?: stringResource(R.string.harvest_complete_label),
                                             fontSize = 15.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = TextPrimary,
@@ -537,7 +554,7 @@ fun FarmDetailsScreen(
                                             )
                                         }
                                         Text(
-                                            "Today's tasks",
+                                            stringResource(R.string.todays_tasks_label),
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = TextPrimary
@@ -551,7 +568,7 @@ fun FarmDetailsScreen(
                                                 .padding(horizontal = 8.dp, vertical = 3.dp)
                                         ) {
                                             Text(
-                                                "${smartTasks.size} tasks",
+                                                localizedDigits(stringResource(R.string.tasks_count_label, smartTasks.size)),
                                                 fontSize = 10.sp,
                                                 fontWeight = FontWeight.SemiBold,
                                                 color = accent
@@ -574,7 +591,7 @@ fun FarmDetailsScreen(
                                     ) {
                                         Text("✅", fontSize = 20.sp)
                                         Text(
-                                            "No specific tasks for today. Continue with current phase activities.",
+                                            stringResource(R.string.no_tasks_today),
                                             fontSize = 12.sp,
                                             color = TextSecondary,
                                             lineHeight = 17.sp
@@ -711,15 +728,15 @@ fun FarmDetailsScreen(
 
                                 val title =
                                     if (isDue)
-                                        "Inspection Due"
+                                        stringResource(R.string.inspection_due_title)
                                     else
-                                        "Next AI Inspection"
+                                        stringResource(R.string.next_ai_inspection_title)
 
                                 val message =
                                     if (isDue)
-                                        "Upload a new crop image today for the next AI analysis."
+                                        stringResource(R.string.upload_image_today)
                                     else
-                                        "Next inspection in $remaining day${if (remaining == 1) "" else "s"}."
+                                        localizedDigits(stringResource(R.string.next_inspection_in_days, remaining))
 
                                 Card(
 
@@ -824,13 +841,13 @@ fun FarmDetailsScreen(
 
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(
-                                            "AI Health Report",
+                                            stringResource(R.string.ai_health_report_title),
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = TextPrimary
                                         )
                                         Text(
-                                            ai.diseaseName.ifBlank { "No disease detected" },
+                                            ai.diseaseName.ifBlank { stringResource(R.string.no_disease_detected) },
                                             fontSize = 12.sp,
                                             color = TextSecondary,
                                             modifier = Modifier.padding(top = 2.dp)
@@ -844,7 +861,7 @@ fun FarmDetailsScreen(
                                                     .padding(horizontal = 8.dp, vertical = 3.dp)
                                             ) {
                                                 Text(
-                                                    "💚 ${ai.healthScore}/100",
+                                                    localizedDigits("💚 ${ai.healthScore}/100"),
                                                     fontSize = 10.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     color = GreenPrimary
@@ -857,7 +874,7 @@ fun FarmDetailsScreen(
                                                     .padding(horizontal = 8.dp, vertical = 3.dp)
                                             ) {
                                                 Text(
-                                                    "${riskEmoji(ai.riskLevel)} ${ai.riskLevel.ifBlank { "--" }}",
+                                                    "${riskEmoji(ai.riskLevel)} ${ai.riskLevel.ifBlank { stringResource(R.string.risk_level_placeholder) }}",
                                                     fontSize = 10.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     color = riskAccent
@@ -885,7 +902,7 @@ fun FarmDetailsScreen(
                             ) {
                                 Icon(Icons.Outlined.Today, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text("Update crop status", fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.update_crop_status_btn), fontWeight = FontWeight.Bold)
                             }
                         }
 
@@ -899,7 +916,7 @@ fun FarmDetailsScreen(
                             ) {
                                 Icon(Icons.Outlined.ViewTimeline, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text("Crop health history", fontWeight = FontWeight.SemiBold)
+                                Text(stringResource(R.string.crop_health_history_btn), fontWeight = FontWeight.SemiBold)
                             }
                         }
 
@@ -913,7 +930,7 @@ fun FarmDetailsScreen(
                             ) {
                                 Icon(Icons.Outlined.CurrencyRupee, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text("Farm expenses", fontWeight = FontWeight.SemiBold)
+                                Text(stringResource(R.string.farm_expenses_btn), fontWeight = FontWeight.SemiBold)
                             }
                         }
 
@@ -933,7 +950,7 @@ fun FarmDetailsScreen(
                                     )
                                 }
                                 Text(
-                                    "Full schedule",
+                                    stringResource(R.string.full_schedule_label),
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = TextPrimary
@@ -992,7 +1009,7 @@ fun FarmDetailsScreen(
                                                 )
                                             } else {
                                                 Text(
-                                                    "${phases.indexOf(phase) + 1}",
+                                                    localizedDigits("${phases.indexOf(phase) + 1}"),
                                                     fontSize = 11.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     color = if (isCurrentPhase || phaseDone) WhitePure
@@ -1074,7 +1091,7 @@ fun FarmDetailsScreen(
                                                             color = if (isCurrentPhase) accent else TextPrimary
                                                         )
                                                         Text(
-                                                            "Day ${DateUtils.calculateTaskDateString(
+                                                            "${DateUtils.calculateTaskDateString(
 
                                                                 farmStartDate = farm!!.startDate,
 
@@ -1107,7 +1124,7 @@ fun FarmDetailsScreen(
                                                             .background(accent)
                                                             .padding(horizontal = 8.dp, vertical = 3.dp)
                                                     ) {
-                                                        Text("Active", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = WhitePure)
+                                                        Text(stringResource(R.string.active_badge), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = WhitePure)
                                                     }
 
                                                     phaseDone -> Box(
@@ -1116,7 +1133,7 @@ fun FarmDetailsScreen(
                                                             .background(Color(0xFF43A047).copy(alpha = 0.12f))
                                                             .padding(horizontal = 8.dp, vertical = 3.dp)
                                                     ) {
-                                                        Text("Done ✓", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
+                                                        Text(stringResource(R.string.done_badge), fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
                                                     }
 
                                                     else -> Icon(
@@ -1149,7 +1166,7 @@ fun FarmDetailsScreen(
                                                 )
                                                 Spacer(Modifier.height(2.dp))
                                                 Text(
-                                                    "Phase ${(phaseProgress * 100).toInt()}% done",
+                                                    localizedDigits(stringResource(R.string.phase_done_percent, (phaseProgress * 100).toInt())),
                                                     fontSize = 9.sp,
                                                     color = accent,
                                                     fontWeight = FontWeight.SemiBold
@@ -1209,17 +1226,15 @@ fun FarmDetailsScreen(
                                                                     else TextDecoration.None
                                                                 )
                                                                 Text(
-                                                                    "Day ${
-                                                                        DateUtils.calculateTaskDateString(
+                                                                    DateUtils.calculateTaskDateString(
 
-                                                                            farmStartDate = farm!!.startDate,
+                                                                        farmStartDate = farm!!.startDate,
 
-                                                                            taskDay = task.day,
+                                                                        taskDay = task.day,
 
-                                                                            completedTasks = completedTasksState.completedTasks
+                                                                        completedTasks = completedTasksState.completedTasks
 
-                                                                        )
-                                                                    }",
+                                                                    ),
                                                                     fontSize = 10.sp,
                                                                     color = TextSecondary,
                                                                     modifier = Modifier.padding(top = 1.dp)
@@ -1264,7 +1279,7 @@ fun FarmDetailsScreen(
                                                     .padding(horizontal = 10.dp, vertical = 5.dp)
                                             ) {
                                                 Text(
-                                                    "📅 Day ${
+                                                    "📅 ${
                                                         DateUtils.calculateTaskDateString(
 
                                                             farmStartDate = farm!!.startDate,
@@ -1300,10 +1315,95 @@ fun FarmDetailsScreen(
                                                 onClick = { dialogTask = null },
                                                 shape = RoundedCornerShape(10.dp),
                                                 colors = it
-                                            ) { Text("Got it", fontWeight = FontWeight.SemiBold) }
+                                            ) { Text(stringResource(R.string.got_it_btn), fontWeight = FontWeight.SemiBold) }
                                         }
                                     }
                                 )
+                            }
+                        }
+
+                        item {
+
+                            when {
+
+                                continueState.isComplete -> {
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(14.dp))
+                                            .background(GreenContainer)
+                                            .padding(16.dp),
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.schedule_complete_label),
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = GreenPrimary
+                                        )
+                                    }
+
+                                }
+
+                                else -> {
+
+                                    Column {
+
+                                        Button(
+                                            onClick = {
+                                                appViewModel.continueSchedule(farmId, currentLangCode)
+                                            },
+                                            enabled = !continueState.isLoading,
+                                            modifier = Modifier.fillMaxWidth().height(50.dp),
+                                            shape = RoundedCornerShape(14.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = accent ?: GreenPrimary,
+                                                contentColor = WhitePure,
+                                                disabledContainerColor = (accent ?: GreenPrimary).copy(alpha = 0.6f),
+                                                disabledContentColor = WhitePure
+                                            )
+                                        ) {
+
+                                            if (continueState.isLoading) {
+
+                                                CircularProgressIndicator(
+                                                    color = WhitePure,
+                                                    strokeWidth = 2.dp,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                                Spacer(Modifier.width(8.dp))
+                                                Text(stringResource(R.string.generating_next_phase), fontWeight = FontWeight.SemiBold)
+
+                                            } else {
+
+                                                Icon(Icons.Outlined.ChevronRight, contentDescription = null, modifier = Modifier.size(18.dp))
+                                                Spacer(Modifier.width(8.dp))
+                                                Text(stringResource(R.string.continue_schedule_btn), fontWeight = FontWeight.Bold)
+
+                                            }
+                                        }
+
+                                        if (continueState.error.isNotEmpty()) {
+
+                                            Spacer(Modifier.height(8.dp))
+
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clip(RoundedCornerShape(10.dp))
+                                                    .background(Color(0xFFFFEBEE))
+                                                    .padding(12.dp)
+                                            ) {
+                                                Text(
+                                                    text = continueState.error,
+                                                    color = Color(0xFFB71C1C),
+                                                    fontSize = 12.sp
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -1356,8 +1456,8 @@ fun FarmDetailsScreen(
                                     Icon(Icons.Outlined.SmartToy, contentDescription = null, tint = riskAccent, modifier = Modifier.size(20.dp))
                                 }
                                 Column {
-                                    Text("AI Health Report", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-                                    Text("Day $currentDay", fontSize = 11.sp, color = TextSecondary)
+                                    Text(stringResource(R.string.ai_health_report_title), fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                                    Text(localizedDigits(stringResource(R.string.day_label, currentDay)), fontSize = 11.sp, color = TextSecondary)
                                 }
                             }
                             Box(
@@ -1367,7 +1467,7 @@ fun FarmDetailsScreen(
                                     .padding(horizontal = 10.dp, vertical = 6.dp)
                             ) {
                                 Text(
-                                    "${riskEmoji(ai.riskLevel)} ${ai.riskLevel.ifBlank { "--" }}",
+                                    "${riskEmoji(ai.riskLevel)} ${ai.riskLevel.ifBlank { stringResource(R.string.risk_level_placeholder) }}",
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = riskAccent
@@ -1387,7 +1487,7 @@ fun FarmDetailsScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                ai.diseaseName.ifBlank { "🌾 No disease detected" },
+                                ai.diseaseName.ifBlank { stringResource(R.string.no_disease_detected_emoji) },
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = TextPrimary
@@ -1400,8 +1500,8 @@ fun FarmDetailsScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Health score", fontSize = 11.sp, color = TextSecondary)
-                                Text("${ai.healthScore}/100", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = riskAccent)
+                                Text(stringResource(R.string.health_score_label), fontSize = 11.sp, color = TextSecondary)
+                                Text(localizedDigits("${ai.healthScore}/100"), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = riskAccent)
                             }
                             val animHealth by animateFloatAsState(
                                 targetValue = (ai.healthScore / 100f).coerceIn(0f, 1f),
@@ -1428,12 +1528,12 @@ fun FarmDetailsScreen(
                                 .padding(14.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Text("💊 Recommendations", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GreenPrimary)
+                            Text(stringResource(R.string.recommendations_title), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GreenPrimary)
                             HorizontalDivider(color = GreenContainer)
-                            AiRecommendationRow("💊", "Medicine", ai.recommendedMedicine)
-                            AiRecommendationRow("📦", "Quantity", ai.medicineQuantity)
-                            AiRecommendationRow("💧", "Irrigation", ai.irrigationAdvice)
-                            AiRecommendationRow("🌱", "Fertilizer", ai.fertilizerAdvice, isLast = true)
+                            AiRecommendationRow("💊", stringResource(R.string.label_medicine), ai.recommendedMedicine)
+                            AiRecommendationRow("📦", stringResource(R.string.label_quantity), ai.medicineQuantity)
+                            AiRecommendationRow("💧", stringResource(R.string.label_irrigation), ai.irrigationAdvice)
+                            AiRecommendationRow("🌱", stringResource(R.string.label_fertilizer), ai.fertilizerAdvice, isLast = true)
                         }
                     }
 
@@ -1449,7 +1549,7 @@ fun FarmDetailsScreen(
                                     .padding(14.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Text("✅ Today's AI tasks", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GreenPrimary)
+                                Text(stringResource(R.string.todays_ai_tasks_title), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GreenPrimary)
                                 HorizontalDivider(color = GreenContainer)
                                 ai.todayTasks.forEach { task ->
                                     Row(
@@ -1481,7 +1581,7 @@ fun FarmDetailsScreen(
                                     .padding(14.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Text("🛡 Preventive tips", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GreenPrimary)
+                                Text(stringResource(R.string.preventive_tips_title), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GreenPrimary)
                                 HorizontalDivider(color = GreenContainer)
                                 ai.preventiveTips.forEach { tip ->
                                     Row(

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -54,7 +55,11 @@ import com.sujoy.smartfarm.ui.theme.OutlineGreen
 import com.sujoy.smartfarm.ui.theme.TextPrimary
 import com.sujoy.smartfarm.ui.theme.TextSecondary
 import com.sujoy.smartfarm.ui.theme.WhitePure
-
+import androidx.compose.ui.res.stringResource
+import com.sujoy.smartfarm.R
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedCropName
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.Presentation.Utils.FarmMethod.translatedMethodLabelFromString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +68,8 @@ fun CreateFarmScreen(
     cropName: String,
     farmingMethod: String,
     farmSize: Double,
+    district: String,     // ← new
+    season: String,
     navController: NavHostController,
     appViewModel: AppViewModel = hiltViewModel(),
     estimatedCost: String,
@@ -75,12 +82,13 @@ fun CreateFarmScreen(
 
     val state     by appViewModel.createFarmState.collectAsState()
     val accent     = com.sujoy.smartfarm.Presentation.Components.FarmList.methodColor(farmingMethod)
+    val currentLangCode = androidx.compose.ui.platform.LocalConfiguration.current.locales[0].language
     LaunchedEffect(state.success) {
         if (state.success.isNotEmpty()) {
             Toast.makeText(navController.context, state.success, Toast.LENGTH_SHORT).show()
             navController.navigate(FarmerRoutes.HomeScreen) {
                 popUpTo(
-                    FarmerRoutes.CreateFarmScreen(cropId, cropName, farmingMethod, farmSize, estimatedCost, estimatedYield, estimatedDuration, labourRequired, notes)
+                    FarmerRoutes.CreateFarmScreen(cropId, cropName, farmingMethod, farmSize, estimatedCost, estimatedYield, estimatedDuration, labourRequired, notes, district, season)
                 ) { inclusive = true }
             }
         }
@@ -90,7 +98,7 @@ fun CreateFarmScreen(
         containerColor = OffWhite,
         topBar = {
             FarmTopBar(
-                title = "Create farm",
+                title = stringResource(R.string.create_farm_title),
                 showBack = true,
                 onBack = { navController.popBackStack() }
             )
@@ -143,7 +151,7 @@ fun CreateFarmScreen(
                                     .padding(horizontal = 12.dp, vertical = 5.dp)
                             ) {
                                 Text(
-                                    "$farmingMethod farming",
+                                    "${translatedMethodLabelFromString(farmingMethod)} ${stringResource(R.string.farming_suffix)}",
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = WhitePure
@@ -153,13 +161,13 @@ fun CreateFarmScreen(
 
                         // Crop name
                         Text(
-                            cropName,
+                            translatedCropName(cropName),
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
                             color = WhitePure
                         )
                         Text(
-                            "Fill in the details below to start your farm plan",
+                            stringResource(R.string.fill_details_subtitle),
                             fontSize = 11.sp,
                             color = WhitePure.copy(alpha = 0.75f)
                         )
@@ -167,14 +175,14 @@ fun CreateFarmScreen(
                 }
 
                 // ── Section label
-                SectionLabel(icon = Icons.Outlined.Eco, label = "Farm details")
+                SectionLabel(icon = Icons.Outlined.Eco, label = stringResource(R.string.farm_details_label))
 
                 // ── Farm Name field
                 FarmInputField(
                     value = farmName,
                     onValueChange = { farmName = it },
-                    label = "Farm name",
-                    placeholder = "e.g. My Green Field",
+                    label = stringResource(R.string.farm_name_label),
+                    placeholder = stringResource(R.string.farm_name_placeholder),
                     icon = Icons.Outlined.Yard,
                     accentColor = accent
                 )
@@ -199,9 +207,9 @@ fun CreateFarmScreen(
                         Text("📏", fontSize = 20.sp)
                     }
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Farm size", fontSize = 11.sp, color = TextSecondary)
+                        Text(stringResource(id = R.string.farm_size_stat_label), fontSize = 11.sp, color = TextSecondary)
                         Text(
-                            "$farmSize Acre",
+                            "${localizedDigits("$farmSize")} ${stringResource(R.string.acre_suffix)}",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
@@ -214,7 +222,7 @@ fun CreateFarmScreen(
                             .padding(horizontal = 10.dp, vertical = 5.dp)
                     ) {
                         Text(
-                            "Confirmed",
+                            stringResource(R.string.confirmed_label),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = accent
@@ -228,12 +236,12 @@ fun CreateFarmScreen(
                 ) {
                     InfoChip(
                         icon = "📅",
-                        label = "Starts today",
+                        label = stringResource(R.string.starts_today_label),
                         modifier = Modifier.weight(1f)
                     )
                     InfoChip(
                         icon = "📋",
-                        label = "Phase plan included",
+                        label = stringResource(R.string.phase_plan_included_label),
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -251,7 +259,7 @@ fun CreateFarmScreen(
                 ) {
                     Text("💡", fontSize = 16.sp)
                     Text(
-                        "Once created, your farm plan will include a day-by-day schedule for the entire crop lifecycle.",
+                        stringResource(R.string.farm_plan_note),
                         fontSize = 11.sp,
                         color = TextSecondary,
                         lineHeight = 16.sp
@@ -284,7 +292,7 @@ fun CreateFarmScreen(
 
                             aiEstimatedFarmSize = farmSize
                         )
-                        appViewModel.createFarm(farm)
+                        appViewModel.createFarm(farm, district, season, currentLangCode)
                     },
                     enabled = farmName.isNotBlank() && !state.isLoading,
                     modifier = Modifier
@@ -304,9 +312,11 @@ fun CreateFarmScreen(
                             strokeWidth = 2.dp,
                             modifier = Modifier.size(20.dp)
                         )
+                        Spacer(Modifier.width(8.dp))   // ← new
+                        Text(stringResource(R.string.preparing_farm_schedule))
                     } else {
                         Text(
-                            "Start farming 🌱",
+                            stringResource(R.string.start_farming_btn),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold
                         )

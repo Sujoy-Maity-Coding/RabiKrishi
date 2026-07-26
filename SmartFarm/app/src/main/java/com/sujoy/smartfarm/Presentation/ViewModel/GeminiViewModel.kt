@@ -1,15 +1,21 @@
 package com.sujoy.smartfarm.Presentation.ViewModel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sujoy.smartfarm.AI.model.CropRecommendationRequest
 import com.sujoy.smartfarm.AI.model.EstimateCostRequest
 import com.sujoy.smartfarm.AI.model.GeminiRequest
 import com.sujoy.smartfarm.Domain.UseCase.AnalyzeCrop.AnalyzeCropUseCase
 import com.sujoy.smartfarm.Domain.UseCase.CropMethod.EstimateCostUseCase
+import com.sujoy.smartfarm.Domain.UseCase.GetCropRecommendationUseCase
 import com.sujoy.smartfarm.Domain.model.CropMethod.CostEstimation
 import com.sujoy.smartfarm.Presentation.State.AnalyzeCrop.GeminiUiState
 import com.sujoy.smartfarm.Presentation.State.RecomMethodCreate.EstimateCostState
+import com.sujoy.smartfarm.Presentation.State.RecomMethodCreate.RecommendationState
+import com.sujoy.smartfarm.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +26,9 @@ import javax.inject.Inject
 class GeminiViewModel @Inject constructor(
 
     private val analyzeCropUseCase: AnalyzeCropUseCase,
-    private val estimateCostUseCase: EstimateCostUseCase
+    private val estimateCostUseCase: EstimateCostUseCase,
+    private val getCropRecommendationUseCase: GetCropRecommendationUseCase,
+    @ApplicationContext private val context: Context
 
 ) : ViewModel() {
 
@@ -33,12 +41,20 @@ class GeminiViewModel @Inject constructor(
     val estimateCostState =
         _estimateCostState.asStateFlow()
 
+    private val _recommendationState =
+
+        MutableStateFlow(RecommendationState())
+
+    val recommendationState: StateFlow<RecommendationState> =
+
+        _recommendationState.asStateFlow()
+
     private var selectedEstimate: CostEstimation? = null
 
     private val _translatedNote = MutableStateFlow("")
     val translatedNote: StateFlow<String> = _translatedNote.asStateFlow()
 
-//    fun translateToEnglish(text: String) {
+    //    fun translateToEnglish(text: String) {
 //        viewModelScope.launch {
 //            try {
 //                val prompt = """
@@ -56,19 +72,19 @@ class GeminiViewModel @Inject constructor(
 //            }
 //        }
 //    }
-fun translateToEnglish(text: String) {
-    viewModelScope.launch {
-        try {
-            // Use analyzeCropUseCase's underlying repository
-            // Since you don't have a direct text API, use the same Gemini client
-            // Simplest fix — call the repository directly if injected,
-            // otherwise just store as-is and let Gemini handle it via the crop prompt
-            _translatedNote.value = text  // store as spoken, Gemini will process in context
-        } catch (e: Exception) {
-            _translatedNote.value = text
+    fun translateToEnglish(text: String) {
+        viewModelScope.launch {
+            try {
+                // Use analyzeCropUseCase's underlying repository
+                // Since you don't have a direct text API, use the same Gemini client
+                // Simplest fix — call the repository directly if injected,
+                // otherwise just store as-is and let Gemini handle it via the crop prompt
+                _translatedNote.value = text  // store as spoken, Gemini will process in context
+            } catch (e: Exception) {
+                _translatedNote.value = text
+            }
         }
     }
-}
 
 
     fun selectEstimate(estimate: CostEstimation) {
@@ -110,13 +126,13 @@ fun translateToEnglish(text: String) {
                 val message = when {
 
                     it.message?.contains("busy", true) == true ->
-                        "Gemini AI is busy. Please try again in a few moments."
+                        context.getString(R.string.gemini_err_busy_retry)
 
                     it.message?.contains("503", true) == true ->
-                        "Gemini server is temporarily unavailable."
+                        context.getString(R.string.gemini_err_server_unavailable)
 
                     else ->
-                        it.message ?: "Unknown Error"
+                        it.message ?: context.getString(R.string.repo_err_unknown)
 
                 }
 
@@ -148,7 +164,9 @@ fun translateToEnglish(text: String) {
 
                 request.farmingMethod,
 
-                request.farmSize
+                request.farmSize,
+
+                request.languageCode
 
             )
 
@@ -198,7 +216,7 @@ fun translateToEnglish(text: String) {
                 _estimateCostState.value =
                     _estimateCostState.value.copy(
                         isLoading = false,
-                        error = it.message ?: "Unknown Error"
+                        error = it.message ?: context.getString(R.string.repo_err_unknown)
                     )
 
             }
@@ -211,11 +229,81 @@ fun translateToEnglish(text: String) {
 
         farmingMethod: String,
 
-        farmSize: Double
+        farmSize: Double,
+
+        languageCode: String
 
     ): String {
 
-        return "${farmingMethod.uppercase()}_${farmSize}"
+        return "${farmingMethod.uppercase()}_${farmSize}_$languageCode"
+
+    }
+
+    fun getRecommendations(
+
+        district: String,
+
+        month: Int,
+
+        season: String,
+
+        soilType: String
+
+    ) {
+
+        viewModelScope.launch {
+
+            _recommendationState.value =
+
+                RecommendationState(
+
+                    isLoading = true
+
+                )
+
+            val result =
+
+                getCropRecommendationUseCase(
+
+                    CropRecommendationRequest(
+
+                        district = district,
+
+                        month = month,
+
+                        season = season,
+
+                        soilType = soilType
+
+                    )
+
+                )
+
+            result.onSuccess { crops ->
+
+                _recommendationState.value =
+
+                    RecommendationState(
+
+                        crops = crops
+
+                    )
+
+            }
+
+            result.onFailure { exception ->
+
+                _recommendationState.value =
+
+                    RecommendationState(
+
+                        error = exception.message ?: context.getString(R.string.gemini_err_unable_recommendations2)
+
+                    )
+
+            }
+
+        }
 
     }
 

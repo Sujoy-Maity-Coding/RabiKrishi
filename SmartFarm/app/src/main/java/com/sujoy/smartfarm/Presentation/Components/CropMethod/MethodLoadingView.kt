@@ -44,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,6 +67,7 @@ import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.districtItems
 import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.seasonItems
 import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.soilItems
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.GreenContainer
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
 import com.sujoy.smartfarm.ui.theme.OffWhite
@@ -91,7 +93,7 @@ fun MethodLoadingView() {
         Spacer(Modifier.height(20.dp))
         CircularProgressIndicator(color = GreenPrimary, strokeWidth = 3.dp)
         Spacer(Modifier.height(14.dp))
-        Text("Loading farming methods…", fontSize = 14.sp, color = TextPrimary, fontWeight = FontWeight.SemiBold)
-        Text("Just a moment", fontSize = 12.sp, color = TextSecondary, modifier = Modifier.padding(top = 4.dp))
+        Text(stringResource(R.string.loading_farming_methods), fontSize = 14.sp, color = TextPrimary, fontWeight = FontWeight.SemiBold)
+        Text(stringResource(R.string.just_a_moment), fontSize = 12.sp, color = TextSecondary, modifier = Modifier.padding(top = 4.dp))
     }
 }

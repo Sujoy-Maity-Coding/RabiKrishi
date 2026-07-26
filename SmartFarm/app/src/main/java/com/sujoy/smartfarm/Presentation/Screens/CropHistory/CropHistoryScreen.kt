@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,7 +26,10 @@ import androidx.navigation.NavHostController
 import com.sujoy.smartfarm.Domain.model.DailyFarmUpdate
 import com.sujoy.smartfarm.Presentation.Components.Dashboard.FarmTopBar
 import com.sujoy.smartfarm.Presentation.Components.FarmList.SectionCard
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.Presentation.Utils.FarmDetails.translatedRiskLevel
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.GreenContainer
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
 import com.sujoy.smartfarm.ui.theme.OffWhite
@@ -74,7 +78,7 @@ fun CropHistoryScreen(
         containerColor = OffWhite,
         topBar = {
             FarmTopBar(
-                title = "Crop Health History",
+                title = stringResource(R.string.crop_health_history_title),
                 showBack = true,
                 onBack = { navController.popBackStack() }
             )
@@ -103,7 +107,7 @@ fun CropHistoryScreen(
                             contentAlignment = Alignment.Center
                         ) { Text("📈", fontSize = 32.sp) }
                         CircularProgressIndicator(color = GreenPrimary, strokeWidth = 3.dp)
-                        Text("Loading history…", fontSize = 13.sp, color = TextSecondary)
+                        Text(stringResource(R.string.loading_history), fontSize = 13.sp, color = TextSecondary)
                     }
                 }
             }
@@ -123,7 +127,7 @@ fun CropHistoryScreen(
                     ) {
                         Text("⚠️", fontSize = 40.sp)
                         Text(
-                            "Failed to load",
+                            stringResource(R.string.failed_to_load),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
@@ -147,13 +151,13 @@ fun CropHistoryScreen(
                     ) {
                         Text("🌱", fontSize = 40.sp)
                         Text(
-                            "No updates yet",
+                            stringResource(R.string.no_updates_yet),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
                         )
                         Text(
-                            "Analyze your crop to start building a health history",
+                            stringResource(R.string.no_updates_yet_subtitle),
                             fontSize = 12.sp,
                             color = TextSecondary
                         )
@@ -183,9 +187,10 @@ fun CropHistoryScreen(
                             val maxScore = scores.maxOrNull() ?: 0
                             val minScore = scores.minOrNull() ?: 0
 
-                            StatSummaryTile("📊", "Average", "$avgScore", Modifier.weight(1f))
-                            StatSummaryTile("📈", "Best", "$maxScore", Modifier.weight(1f))
-                            StatSummaryTile("📉", "Lowest", "$minScore", Modifier.weight(1f))
+                            // Stat tiles
+                            StatSummaryTile("📊", stringResource(R.string.stat_average), localizedDigits("$avgScore"), Modifier.weight(1f))
+                            StatSummaryTile("📈", stringResource(R.string.stat_best), localizedDigits("$maxScore"), Modifier.weight(1f))
+                            StatSummaryTile("📉", stringResource(R.string.stat_lowest), localizedDigits("$minScore"), Modifier.weight(1f))
                         }
                     }
 
@@ -196,8 +201,9 @@ fun CropHistoryScreen(
                     }
 
                     item {
+                        // Section label
                         Text(
-                            "Update Log",
+                            stringResource(R.string.update_log_title),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary,
@@ -236,12 +242,12 @@ fun CropHistoryScreen(
 
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    "Day ${update.day}",
+                                    localizedDigits(stringResource(R.string.day_label, update.day)),
                                     fontSize = 11.sp,
                                     color = TextSecondary
                                 )
                                 Text(
-                                    ai.diseaseName.ifBlank { "Healthy" },
+                                    ai.diseaseName.ifBlank { stringResource(R.string.healthy_label) },
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = TextPrimary
@@ -258,7 +264,7 @@ fun CropHistoryScreen(
                                             .padding(horizontal = 8.dp, vertical = 3.dp)
                                     ) {
                                         Text(
-                                            "💚 ${ai.healthScore}",
+                                            "💚 ${localizedDigits("${ai.healthScore}")}",
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             color = GreenPrimary
@@ -271,7 +277,7 @@ fun CropHistoryScreen(
                                             .padding(horizontal = 8.dp, vertical = 3.dp)
                                     ) {
                                         Text(
-                                            ai.riskLevel.ifBlank { "--" },
+                                            translatedRiskLevel(ai.riskLevel).ifBlank { "--" },
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             color = accent

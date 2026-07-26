@@ -3,6 +3,7 @@ package com.sujoy.smartfarm.AI.model
 import android.net.Uri
 
 data class GeminiRequest(
+    val languageCode: String = "en",
 
     val imageUri: Uri,
 

@@ -4,8 +4,10 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
+import com.sujoy.smartfarm.AI.model.CropRecommendationRequest
 import com.sujoy.smartfarm.AI.model.EstimateCostRequest
 import com.sujoy.smartfarm.AI.model.GeminiRequest
+import com.sujoy.smartfarm.AI.model.ScheduleGenerationRequest
 import com.sujoy.smartfarm.Common.Constant
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
@@ -116,6 +118,7 @@ class GeminiService @Inject constructor(
     ): String {
 
         val prompt = estimateCostPrompt.build(request)
+        android.util.Log.d("LANG_DEBUG", "Prompt sent:\n$prompt")
 
         var lastException: Exception? = null
 
@@ -148,6 +151,120 @@ class GeminiService @Inject constructor(
 
                     if (attempt < 2)
                         delay(3000)
+
+                } else {
+
+                    throw e
+
+                }
+
+            }
+
+        }
+
+        throw lastException ?: Exception("Gemini Busy")
+
+    }
+
+    suspend fun recommendCrops(
+
+        request: CropRecommendationRequest
+
+    ): String {
+
+        val prompt = CropRecommendationPrompt.build(request)
+
+        var lastException: Exception? = null
+
+        repeat(3) { attempt ->
+
+            try {
+
+                val response = model.generateContent(prompt)
+
+                val text = response.text
+
+                if (!text.isNullOrBlank()) {
+
+                    return text
+
+                }
+
+                throw Exception("Empty response")
+
+            } catch (e: Exception) {
+
+                lastException = e
+
+                if (
+
+                    e.message?.contains("503", true) == true ||
+
+                    e.message?.contains("UNAVAILABLE", true) == true ||
+
+                    e.message?.contains("high demand", true) == true
+
+                ) {
+
+                    if (attempt < 2) {
+
+                        delay(3000)
+
+                    }
+
+                } else {
+
+                    throw e
+
+                }
+
+            }
+
+        }
+
+        throw lastException ?: Exception("Gemini Busy")
+
+    }
+
+    suspend fun generateSchedule(
+
+        request: ScheduleGenerationRequest
+
+    ): String {
+
+        val prompt = ScheduleGenerationPrompt.build(request)
+
+        var lastException: Exception? = null
+
+        repeat(3) { attempt ->
+
+            try {
+
+                val response = model.generateContent(prompt)
+
+                val text = response.text
+
+                if (!text.isNullOrBlank()) {
+
+                    return text
+
+                }
+
+                throw Exception("Empty response")
+
+            } catch (e: Exception) {
+
+                lastException = e
+
+                if (
+                    e.message?.contains("503", true) == true ||
+                    e.message?.contains("UNAVAILABLE", true) == true ||
+                    e.message?.contains("high demand", true) == true
+                ) {
+
+                    if (attempt < 2) {
+                        delay(3000)
+                    }
 
                 } else {
 

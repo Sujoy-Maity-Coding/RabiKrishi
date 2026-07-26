@@ -44,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,6 +67,7 @@ import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.districtItems
 import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.seasonItems
 import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.soilItems
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
 import com.sujoy.smartfarm.ui.theme.OffWhite
 import com.sujoy.smartfarm.ui.theme.OutlineGreen
@@ -82,7 +84,7 @@ fun MethodErrorView(message: String) {
     ) {
         Text("⚠️", fontSize = 44.sp)
         Spacer(Modifier.height(14.dp))
-        Text("Could not load methods", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+        Text(stringResource(R.string.could_not_load_methods), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
         Text(message, fontSize = 13.sp, color = TextSecondary, modifier = Modifier.padding(top = 6.dp))
     }
 }

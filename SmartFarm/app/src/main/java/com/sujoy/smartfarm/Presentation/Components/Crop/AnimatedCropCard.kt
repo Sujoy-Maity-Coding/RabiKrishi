@@ -18,6 +18,8 @@ fun AnimatedCropCard(
     crop: Crop,
     meta: CropMeta,
     rank: Int,
+    district: String,    // ← new
+    season: String,
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
@@ -32,6 +34,6 @@ fun AnimatedCropCard(
         enter = fadeIn() + slideInVertically(initialOffsetY = { it / 3 }),
         modifier = modifier
     ) {
-        CropCard(crop = crop, meta = meta, rank = rank,navController=navController)
+        CropCard(crop = crop, meta = meta, rank = rank, district = district, season = season, navController=navController)
     }
 }

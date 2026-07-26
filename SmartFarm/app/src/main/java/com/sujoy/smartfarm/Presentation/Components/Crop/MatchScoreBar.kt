@@ -57,6 +57,9 @@ import com.sujoy.smartfarm.Presentation.Navigation.FarmerRoutes
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
 import com.sujoy.smartfarm.ui.theme.GreenContainer
 import com.sujoy.smartfarm.ui.theme.TextSecondary
+import androidx.compose.ui.res.stringResource
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.R
 
 @Composable
 fun MatchScoreBar(score: Int, accentColor: Color) {
@@ -70,8 +73,8 @@ fun MatchScoreBar(score: Int, accentColor: Color) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Match score", fontSize = 11.sp, color = TextSecondary)
-            Text("$score / 100", fontSize = 11.sp, color = TextSecondary, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.match_score_label), fontSize = 11.sp, color = TextSecondary)
+            Text(localizedDigits("$score / 100"), fontSize = 11.sp, color = TextSecondary, fontWeight = FontWeight.SemiBold)
         }
         Spacer(Modifier.height(4.dp))
         LinearProgressIndicator(

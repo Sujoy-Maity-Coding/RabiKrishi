@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -49,7 +50,9 @@ import androidx.navigation.NavHostController
 import com.sujoy.smartfarm.Domain.model.Farm
 import com.sujoy.smartfarm.Presentation.Components.Dashboard.FarmTopBar
 import com.sujoy.smartfarm.Presentation.Navigation.FarmerRoutes
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.GreenContainer
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
 import com.sujoy.smartfarm.ui.theme.OffWhite
@@ -74,7 +77,7 @@ fun MyFarmsScreen(
         containerColor = OffWhite,
         topBar = {
             FarmTopBar(
-                title = "My farms",
+                title = stringResource(R.string.my_farms_title),
                 showBack = true,
                 onBack = { navController.popBackStack() }
             )
@@ -101,7 +104,7 @@ fun MyFarmsScreen(
                         ) { Text("🌾", fontSize = 32.sp) }
                         CircularProgressIndicator(color = GreenPrimary, strokeWidth = 3.dp)
                         Text(
-                            "Loading your farms…",
+                            stringResource(R.string.loading_farms),
                             fontSize = 14.sp,
                             color = TextSecondary,
                             fontWeight = FontWeight.Medium
@@ -120,7 +123,7 @@ fun MyFarmsScreen(
                     ) {
                         Text("⚠️", fontSize = 44.sp)
                         Text(
-                            "Something went wrong",
+                            stringResource(R.string.something_went_wrong),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
@@ -152,13 +155,13 @@ fun MyFarmsScreen(
                         ) { Text("🌱", fontSize = 48.sp) }
 
                         Text(
-                            "No farms yet",
+                            stringResource(R.string.no_farms_yet),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
                         )
                         Text(
-                            "Get a crop recommendation first,\nthen create your farm plan.",
+                            stringResource(R.string.no_farms_subtitle),
                             fontSize = 13.sp,
                             color = TextSecondary,
                             textAlign = TextAlign.Center,
@@ -180,7 +183,7 @@ fun MyFarmsScreen(
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(Modifier.width(8.dp))
-                            Text("Get crop recommendation", fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(R.string.get_crop_recommendation_btn), fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
@@ -212,13 +215,13 @@ fun MyFarmsScreen(
                                 ) {
                                     Column {
                                         Text(
-                                            "Your farm portfolio",
+                                            stringResource(R.string.your_farm_portfolio),
                                             fontSize = 15.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = WhitePure
                                         )
                                         Text(
-                                            "${state.farms.size} farm${if (state.farms.size != 1) "s" else ""} active",
+                                            stringResource(R.string.active_farms_count, state.farms.size),
                                             fontSize = 11.sp,
                                             color = WhitePure.copy(alpha = 0.75f),
                                             modifier = Modifier.padding(top = 2.dp)
@@ -232,7 +235,7 @@ fun MyFarmsScreen(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
-                                            "${state.farms.size}",
+                                            localizedDigits("${state.farms.size}"),
                                             fontSize = 24.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = WhitePure
@@ -245,7 +248,7 @@ fun MyFarmsScreen(
                         // Section label
                         item {
                             Text(
-                                "All farms",
+                                stringResource(R.string.all_farms_label),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = TextSecondary,

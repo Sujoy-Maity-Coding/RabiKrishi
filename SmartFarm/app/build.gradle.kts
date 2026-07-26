@@ -63,6 +63,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.room.runtime.android)
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -101,4 +105,6 @@ dependencies {
         exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
     }
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
+    implementation("androidx.appcompat:appcompat:1.7.0")
 }

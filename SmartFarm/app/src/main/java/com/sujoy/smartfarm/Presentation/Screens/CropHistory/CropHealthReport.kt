@@ -14,11 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.sujoy.smartfarm.Domain.model.DailyFarmUpdate
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.Presentation.Utils.FarmDetails.translatedRiskLevel
+import com.sujoy.smartfarm.Presentation.Utils.FarmDetails.translatedSeverity
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.GreenContainer
 import com.sujoy.smartfarm.ui.theme.GreenOnContainer
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
@@ -95,12 +100,12 @@ fun CropHealthReport(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Day ${update.day}",
+                        localizedDigits(stringResource(R.string.day_label, update.day)),
                         fontSize = 11.sp,
                         color = TextSecondary
                     )
                     Text(
-                        ai.diseaseName.ifBlank { "🌾 Healthy" },
+                        ai.diseaseName.ifBlank { stringResource(R.string.healthy_emoji_label) },
                         fontSize = 19.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary
@@ -113,7 +118,7 @@ fun CropHealthReport(
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        "${riskEmoji(ai.riskLevel)} ${ai.riskLevel.ifBlank { "--" }}",
+                        "${riskEmoji(ai.riskLevel)} ${translatedRiskLevel(ai.riskLevel).ifBlank { "--" }}",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = riskColor(ai.riskLevel)
@@ -142,7 +147,7 @@ fun CropHealthReport(
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Text("💚", fontSize = 14.sp)
-                        Text("Health score", fontSize = 11.sp, color = TextSecondary)
+                        Text(stringResource(R.string.health_score_label), fontSize = 11.sp, color = TextSecondary)
                     }
                     Text(
                         "${ai.healthScore}/100",
@@ -163,6 +168,7 @@ fun CropHealthReport(
                 )
             }
         }
+        // Metric tiles section
         if (ai.severity.isNotBlank() || ai.currentPhase.isNotBlank()) {
             item {
                 Row(
@@ -170,10 +176,10 @@ fun CropHealthReport(
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     if (ai.severity.isNotBlank()) {
-                        ReportTile("📊", "Severity", ai.severity, Modifier.weight(1f))
+                        ReportTile("📊", stringResource(R.string.severity_label), translatedSeverity(ai.severity), Modifier.weight(1f))
                     }
                     if (ai.currentPhase.isNotBlank()) {
-                        ReportTile("📍", "Phase", ai.currentPhase, Modifier.weight(1f))
+                        ReportTile("📍", stringResource(R.string.phase_label), ai.currentPhase, Modifier.weight(1f))
                     }
                 }
             }
@@ -189,28 +195,25 @@ fun CropHealthReport(
         }
 
         // ── Recommendations
-        item { SectionHeading("💊 Recommendations") }
-        item { ReportRow("💊", "Recommended Medicine", ai.recommendedMedicine) }
-        item { ReportRow("📦", "Medicine Quantity", ai.medicineQuantity) }
-        item { ReportRow("🌿", "Organic Treatment", ai.organicTreatment) }
-        item { ReportRow("🧪", "Chemical Treatment", ai.chemicalTreatment) }
-        item { ReportRow("💧", "Irrigation Advice", ai.irrigationAdvice) }
-        item { ReportRow("🌱", "Fertilizer Advice", ai.fertilizerAdvice) }
+        // Recommendations section
+        item { SectionHeading(stringResource(R.string.recommendations_section_title)) }
+        item { ReportRow("💊", stringResource(R.string.label_medicine), ai.recommendedMedicine) }
+        item { ReportRow("📦", stringResource(R.string.label_quantity), ai.medicineQuantity) }
+        item { ReportRow("🌿", stringResource(R.string.organic_treatment_label), ai.organicTreatment) }
+        item { ReportRow("🧪", stringResource(R.string.chemical_treatment_label), ai.chemicalTreatment) }
+        item { ReportRow("💧", stringResource(R.string.label_irrigation), ai.irrigationAdvice) }
+        item { ReportRow("🌱", stringResource(R.string.label_fertilizer), ai.fertilizerAdvice) }
 
         // ── Today's tasks
+        // Today's tasks / preventive tips
         if (ai.todayTasks.isNotEmpty()) {
-            item { SectionHeading("✅ Today's Tasks") }
-            items(ai.todayTasks) { task ->
-                ChecklistRow(task)
-            }
+            item { SectionHeading(stringResource(R.string.todays_ai_tasks_title)) }
+            items(ai.todayTasks) { task -> ChecklistRow(task) }
         }
 
-        // ── Preventive tips
         if (ai.preventiveTips.isNotEmpty()) {
-            item { SectionHeading("🛡 Preventive Tips") }
-            items(ai.preventiveTips) { tip ->
-                BulletRow(tip)
-            }
+            item { SectionHeading(stringResource(R.string.preventive_tips_title)) }
+            items(ai.preventiveTips) { tip -> BulletRow(tip) }
         }
 
         item { Spacer(Modifier.height(12.dp)) }

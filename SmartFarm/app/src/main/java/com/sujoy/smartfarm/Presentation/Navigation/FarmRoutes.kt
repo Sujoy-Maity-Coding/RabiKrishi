@@ -15,6 +15,9 @@ sealed class FarmerRoutes {
     object SignUpScreen : FarmerRoutes()
 
     @Serializable
+    object LanguageSelectionScreen : FarmerRoutes()
+
+    @Serializable
     object HomeScreen : FarmerRoutes()
 
     @Serializable
@@ -36,32 +39,57 @@ sealed class FarmerRoutes {
 
     ) : FarmerRoutes()
 
+//    @Serializable
+//    data class MethodSelectionScreen(
+//        val cropId: String,
+//        val cropName: String
+//    ) : FarmerRoutes()
+//
+//    @Serializable
+//    data class CreateFarmScreen(
+//
+//        val cropId: String,
+//
+//        val cropName: String,
+//
+//        val farmingMethod: String,
+//
+//        val farmSize: Double,
+//
+//        val estimatedCost: String,
+//
+//        val estimatedYield: String,
+//
+//        val estimatedDuration: String,
+//
+//        val labourRequired: String,
+//
+//        val notes: String
+//    ) : FarmerRoutes()
+
     @Serializable
     data class MethodSelectionScreen(
         val cropId: String,
-        val cropName: String
+        val cropName: String,
+        val district: String,   // ← new
+        val season: String       // ← new
     ) : FarmerRoutes()
 
     @Serializable
     data class CreateFarmScreen(
 
         val cropId: String,
-
         val cropName: String,
-
         val farmingMethod: String,
-
         val farmSize: Double,
-
         val estimatedCost: String,
-
         val estimatedYield: String,
-
         val estimatedDuration: String,
-
         val labourRequired: String,
+        val notes: String,
+        val district: String,    // ← new
+        val season: String        // ← new
 
-        val notes: String
     ) : FarmerRoutes()
 
     @Serializable

@@ -24,10 +24,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.compose.ui.res.stringResource
 import com.sujoy.smartfarm.Domain.model.Expense.Expense
 import com.sujoy.smartfarm.Presentation.Components.Expense.ExpenseCard
 import com.sujoy.smartfarm.Presentation.Components.Dashboard.FarmTopBar
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.*
 
 // ── Category metadata ─────────────────────────────────────────────────────────
@@ -48,6 +51,21 @@ private val categoryMeta = mapOf(
 private fun categoryEmoji(cat: String) = categoryMeta[cat]?.emoji ?: "📦"
 private fun categoryColor(cat: String) = categoryMeta[cat]?.color ?: TextSecondary
 
+// Stored category values (e.g. "Seed", "Fertilizer") stay in English for data
+// consistency in Firestore — this only translates what's shown on screen.
+@Composable
+private fun translatedCategory(category: String): String = when (category) {
+    "Seed"       -> stringResource(R.string.category_seed)
+    "Fertilizer" -> stringResource(R.string.category_fertilizer)
+    "Pesticide"  -> stringResource(R.string.category_pesticide)
+    "Labour"     -> stringResource(R.string.category_labour)
+    "Irrigation" -> stringResource(R.string.category_irrigation)
+    "Transport"  -> stringResource(R.string.category_transport)
+    "Equipment"  -> stringResource(R.string.category_equipment)
+    "Others"     -> stringResource(R.string.category_others)
+    else         -> category
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FarmExpenseScreen(
@@ -59,6 +77,7 @@ fun FarmExpenseScreen(
 
 ) {
     val context = LocalContext.current
+    val invalidAmountMessage = stringResource(R.string.invalid_amount_toast)
 
     val expenseState    by viewModel.expenseListState.collectAsState()
     val farmState       by viewModel.farmDetailsState.collectAsState()
@@ -82,9 +101,9 @@ fun FarmExpenseScreen(
     val remainingBudget = estimatedCost - totalExpense
 
     val budgetStatus = when {
-        remainingBudget > 0    -> "Within Budget ✅"
-        remainingBudget == 0.0 -> "Budget Fully Used ⚠️"
-        else                   -> "Budget Exceeded ❌"
+        remainingBudget > 0    -> stringResource(R.string.budget_within_status)
+        remainingBudget == 0.0 -> stringResource(R.string.budget_fully_used_status)
+        else                   -> stringResource(R.string.budget_exceeded_status)
     }
 
     val statusColor = when {
@@ -123,7 +142,7 @@ fun FarmExpenseScreen(
         containerColor = OffWhite,
         topBar = {
             FarmTopBar(
-                title = "Expense tracker",
+                title = stringResource(R.string.expense_tracker_title),
                 showBack = true,
                 onBack = { navController.popBackStack() }
             )
@@ -166,7 +185,7 @@ fun FarmExpenseScreen(
                         ) { Text("💰", fontSize = 20.sp) }
                         Column {
                             Text(
-                                "Budget summary",
+                                stringResource(R.string.budget_summary_label),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = WhitePure
@@ -185,18 +204,18 @@ fun FarmExpenseScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         BudgetTile(
-                            label = "AI estimated",
-                            value = "₹%.0f".format(estimatedCost),
+                            label = stringResource(R.string.ai_estimated_label),
+                            value = localizedDigits("₹%.0f".format(estimatedCost)),
                             modifier = Modifier.weight(1f)
                         )
                         BudgetTile(
-                            label = "Spent so far",
-                            value = "₹%.0f".format(totalExpense),
+                            label = stringResource(R.string.spent_so_far_label),
+                            value = localizedDigits("₹%.0f".format(totalExpense)),
                             modifier = Modifier.weight(1f)
                         )
                         BudgetTile(
-                            label = "Remaining",
-                            value = "₹%.0f".format(remainingBudget),
+                            label = stringResource(R.string.remaining_label),
+                            value = localizedDigits("₹%.0f".format(remainingBudget)),
                             valueColor = if (remainingBudget >= 0) Color(0xFF69F0AE) else Color(0xFFFF5252),
                             modifier = Modifier.weight(1f)
                         )
@@ -209,12 +228,12 @@ fun FarmExpenseScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                "Budget used",
+                                stringResource(R.string.budget_used_label),
                                 fontSize = 11.sp,
                                 color = WhitePure.copy(alpha = 0.75f)
                             )
                             Text(
-                                "${(budgetProgress * 100).toInt()}%",
+                                localizedDigits("${(budgetProgress * 100).toInt()}%"),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = WhitePure
@@ -276,7 +295,7 @@ fun FarmExpenseScreen(
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(
-                                "Spending by category",
+                                stringResource(R.string.spending_by_category_label),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = TextPrimary
@@ -298,7 +317,7 @@ fun FarmExpenseScreen(
                                         .background(catColor.copy(alpha = 0.1f)),
                                     contentAlignment = Alignment.Center
                                 ) { Text(categoryEmoji(cat), fontSize = 14.sp) }
-                                Text(cat, fontSize = 12.sp, color = TextPrimary, modifier = Modifier.weight(1f))
+                                Text(translatedCategory(cat), fontSize = 12.sp, color = TextPrimary, modifier = Modifier.weight(1f))
                                 // Mini bar
                                 Box(
                                     modifier = Modifier
@@ -316,7 +335,7 @@ fun FarmExpenseScreen(
                                     )
                                 }
                                 Text(
-                                    "₹%.0f".format(spent),
+                                    localizedDigits("₹%.0f".format(spent)),
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = catColor
@@ -343,7 +362,7 @@ fun FarmExpenseScreen(
                 ) {
                     Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Add expense", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(stringResource(R.string.add_expense_btn), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
             }
 
@@ -356,7 +375,7 @@ fun FarmExpenseScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            "All expenses",
+                            stringResource(R.string.all_expenses_label),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
@@ -368,7 +387,7 @@ fun FarmExpenseScreen(
                                 .padding(horizontal = 9.dp, vertical = 4.dp)
                         ) {
                             Text(
-                                "${expenseState.expenses.size} items",
+                                localizedDigits(stringResource(R.string.items_count_label, expenseState.expenses.size)),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = GreenOnContainer
@@ -389,13 +408,13 @@ fun FarmExpenseScreen(
                     ) {
                         Text("📊", fontSize = 36.sp)
                         Text(
-                            "No expenses yet",
+                            stringResource(R.string.no_expenses_yet_title),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
                         )
                         Text(
-                            "Tap \"Add expense\" to track your farm spending",
+                            stringResource(R.string.no_expenses_yet_subtitle),
                             fontSize = 12.sp,
                             color = TextSecondary
                         )
@@ -448,7 +467,7 @@ fun FarmExpenseScreen(
                             contentAlignment = Alignment.Center
                         ) { Text("➕", fontSize = 16.sp) }
                         Text(
-                            "Add expense",
+                            stringResource(R.string.add_expense_btn),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
@@ -462,7 +481,7 @@ fun FarmExpenseScreen(
                             .padding(horizontal = 10.dp, vertical = 6.dp)
                     ) {
                         Text(
-                            "${categoryEmoji(selectedCategory)} $selectedCategory",
+                            "${categoryEmoji(selectedCategory)} ${translatedCategory(selectedCategory)}",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = categoryColor(selectedCategory)
@@ -482,13 +501,13 @@ fun FarmExpenseScreen(
                 ) {
                     OutlinedTextField(
 
-                        value = selectedCategory,
+                        value = translatedCategory(selectedCategory),
 
                         onValueChange = {},
 
                         readOnly = true,
 
-                        label = { Text("Category") },
+                        label = { Text(stringResource(R.string.category_label)) },
 
                         leadingIcon = {
                             Text(categoryEmoji(selectedCategory), fontSize = 18.sp,
@@ -525,7 +544,7 @@ fun FarmExpenseScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(categoryEmoji(category), fontSize = 16.sp)
-                                        Text(category, fontSize = 13.sp, color = TextPrimary)
+                                        Text(translatedCategory(category), fontSize = 13.sp, color = TextPrimary)
                                     }
                                 },
 
@@ -551,9 +570,9 @@ fun FarmExpenseScreen(
 
                     modifier = Modifier.fillMaxWidth(),
 
-                    label = { Text("Amount (₹)") },
+                    label = { Text(stringResource(R.string.amount_label)) },
 
-                    placeholder = { Text("e.g. 2500", color = TextSecondary.copy(alpha = 0.5f)) },
+                    placeholder = { Text(stringResource(R.string.amount_placeholder), color = TextSecondary.copy(alpha = 0.5f)) },
 
                     leadingIcon = {
                         Icon(Icons.Outlined.CurrencyRupee, contentDescription = null,
@@ -577,10 +596,10 @@ fun FarmExpenseScreen(
 
                     modifier = Modifier.fillMaxWidth(),
 
-                    label = { Text("Note") },
+                    label = { Text(stringResource(R.string.note_label)) },
 
                     placeholder = {
-                        Text("e.g. Purchased certified seeds", color = TextSecondary.copy(alpha = 0.5f))
+                        Text(stringResource(R.string.note_placeholder), color = TextSecondary.copy(alpha = 0.5f))
                     },
 
                     leadingIcon = {
@@ -603,7 +622,7 @@ fun FarmExpenseScreen(
                         showBottomSheet = false
 
                         if (amount.toDoubleOrNull() == null) {
-                            Toast.makeText(context, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, invalidAmountMessage, Toast.LENGTH_SHORT).show()
                         }
 
                         val expense = Expense(
@@ -627,7 +646,7 @@ fun FarmExpenseScreen(
                 ) {
                     Icon(Icons.Outlined.Save, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Save expense", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(stringResource(R.string.save_expense_btn), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
             }
         }
@@ -663,7 +682,7 @@ private fun StyledExpenseCard(expense: Expense) {
         // Info
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
             Text(
-                expense.category,
+                translatedCategory(expense.category),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
@@ -677,8 +696,10 @@ private fun StyledExpenseCard(expense: Expense) {
                 )
             }
             Text(
-                java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
-                    .format(java.util.Date(expense.date)),
+                localizedDigits(
+                    java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
+                        .format(java.util.Date(expense.date))
+                ),
                 fontSize = 10.sp,
                 color = TextSecondary
             )
@@ -692,7 +713,7 @@ private fun StyledExpenseCard(expense: Expense) {
                 .padding(horizontal = 12.dp, vertical = 7.dp)
         ) {
             Text(
-                "₹%.0f".format(expense.amount),
+                localizedDigits("₹%.0f".format(expense.amount)),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = catColor

@@ -1,31 +1,81 @@
 package com.sujoy.smartfarm.Presentation.Components.Crop
 
 import androidx.compose.ui.graphics.Color
+import com.sujoy.smartfarm.Domain.model.Crop
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
 
-class CropMeta(
+data class CropMeta(
+
     val emoji: String,
-    val category: String,
-    val matchScore: Int,        // 0–100
-    val waterNeed: String,      // Low / Medium / High
-    val growthDays: String,
-    val marketDemand: String,   // Low / Medium / High
+
     val accentColor: Color
+
 )
 
-val cropMetaMap: Map<String, CropMeta> = mapOf(
-    "Rice"    to CropMeta("🌾","Cereal",96,"High","90–120 days","Very High", Color(0xFF2E7D32)),
-    "Paddy"   to CropMeta("🌾","Cereal",94,"High","90–120 days","Very High", Color(0xFF2E7D32)),
-    "Jute"    to CropMeta("🪢","Fibre", 88,"High","120 days","High",        Color(0xFF6D4C41)),
-    "Potato"  to CropMeta("🥔","Vegetable",91,"Medium","70–90 days","High", Color(0xFFF57F17)),
-    "Mustard" to CropMeta("🌻","Oilseed",85,"Low","90–110 days","High",     Color(0xFFF9A825)),
-    "Wheat"   to CropMeta("🌽","Cereal",80,"Medium","110–150 days","High",  Color(0xFFEF8C00)),
-    "Maize"   to CropMeta("🌽","Cereal",78,"Medium","80–100 days","Medium", Color(0xFFFFB300)),
-    "Boro"    to CropMeta("🌾","Cereal",90,"High","130–150 days","High",    Color(0xFF1B5E20)),
-    "Aman"    to CropMeta("🌾","Cereal",92,"High","130–150 days","High",    Color(0xFF2E7D32)),
-    "Aus"     to CropMeta("🌾","Cereal",75,"Medium","80–100 days","Medium", Color(0xFF388E3C)),
+private val cropMetaMap = mapOf(
+
+    "Rice" to CropMeta("🌾", Color(0xFF2E7D32)),
+
+    "Paddy" to CropMeta("🌾", Color(0xFF2E7D32)),
+
+    "Jute" to CropMeta("🪢", Color(0xFF6D4C41)),
+
+    "Potato" to CropMeta("🥔", Color(0xFFF57F17)),
+
+    "Mustard" to CropMeta("🌻", Color(0xFFF9A825)),
+
+    "Wheat" to CropMeta("🌾", Color(0xFFEF8C00)),
+
+    "Maize" to CropMeta("🌽", Color(0xFFFFB300)),
+
+    "Sunflower" to CropMeta("🌻", Color(0xFFFBC02D)),
+
+    "Groundnut" to CropMeta("🥜", Color(0xFF8D6E63)),
+
+    "Sugarcane" to CropMeta("🎋", Color(0xFF43A047)),
+
+    "Tomato" to CropMeta("🍅", Color(0xFFE53935)),
+
+    "Brinjal" to CropMeta("🍆", Color(0xFF7B1FA2)),
+
+    "Onion" to CropMeta("🧅", Color(0xFF8D6E63)),
+
+    "Cabbage" to CropMeta("🥬", Color(0xFF66BB6A)),
+
+    "Cauliflower" to CropMeta("🥦", Color(0xFF9CCC65)),
+
+    "Chilli" to CropMeta("🌶️", Color(0xFFD32F2F)),
+
+    "Boro" to CropMeta("🌾", Color(0xFF1B5E20)),
+
+    "Aman" to CropMeta("🌾", Color(0xFF2E7D32)),
+
+    "Aus" to CropMeta("🌾", Color(0xFF388E3C))
+
 )
 
-fun metaFor(cropName: String): CropMeta =
-    cropMetaMap.entries.firstOrNull { cropName.contains(it.key, ignoreCase = true) }?.value
-        ?: CropMeta("🌱","Crop",70,"Medium","90–120 days","Medium", GreenPrimary)
+fun metaFor(crop: Crop): CropMeta {
+
+    return cropMetaMap.entries
+
+        .firstOrNull {
+
+            crop.cropName.contains(
+
+                it.key,
+
+                ignoreCase = true
+
+            )
+
+        }?.value
+
+        ?: CropMeta(
+
+            emoji = "🌱",
+
+            accentColor = GreenPrimary
+
+        )
+
+}

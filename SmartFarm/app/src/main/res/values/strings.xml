@@ -1,3 +1,451 @@
 <resources>
-    <string name="app_name">Rabi Krishi</string>
+    <string name="app_name" translatable="false">Rabi Krishi</string>
+    <string name="app_title_dashboard">Rabi Krishi</string>
+
+    <!-- Home Screen -->
+    <string name="home_greeting">Good day, Farmer 👋</string>
+    <string name="home_subtitle">What would you like to do today?</string>
+    <string name="stat_districts">6 Districts</string>
+    <string name="stat_seasons">3 Seasons</string>
+    <string name="stat_soil_types">4 Soil types</string>
+    <string name="section_features">Features</string>
+    <string name="feature_crop_title">Crop recommendation</string>
+    <string name="feature_crop_subtitle">Find the best crop for your farm</string>
+    <string name="feature_farms_title">My Farms</string>
+    <string name="feature_farms_subtitle">Manage and track your farms</string>
+    <string name="feature_profile_title">My profile</string>
+    <string name="feature_profile_subtitle">View and edit your account</string>
+
+    <!-- Crop Recommendation Screen -->
+    <string name="crop_reco_title">Crop recommendation</string>
+    <string name="crop_reco_hero_title">Tell us about your farm</string>
+    <string name="crop_reco_hero_subtitle">4 quick details → personalised crop list</string>
+    <string name="step_district">District</string>
+    <string name="step_month">Month</string>
+    <string name="step_season">Season</string>
+    <string name="step_soil">Soil</string>
+    <string name="label_your_district">Your district</string>
+    <string name="label_planting_month">Planting month</string>
+    <string name="label_crop_season">Crop season</string>
+    <string name="label_soil_type">Soil type</string>
+    <string name="btn_get_recommendations">Get my recommendations →</string>
+    <string name="btn_complete_fields">Complete all fields to continue</string>
+
+    <!-- Recommendation Result Screen -->
+    <string name="recommended_crops_title">Recommended crops</string>
+    <string name="best_matches_label">Best matches for you</string>
+    <string name="crops_count">%1$d crops</string>
+
+    <!-- Result Hero Banner -->
+    <string name="analysis_complete">Analysis complete ✓</string>
+    <string name="soil_suffix">soil</string>
+    <string name="crops_label">crops</string>
+
+    <!-- Crop Card -->
+    <string name="match_suffix">%1$d%% match</string>
+    <string name="crop_details_label">Crop details</string>
+    <string name="water_requirement_label">Water requirement</string>
+    <string name="growth_duration_label">Growth duration</string>
+    <string name="expected_yield_label">Expected yield</string>
+    <string name="market_demand_label">Market demand</string>
+    <string name="crop_category_label">Crop category</string>
+    <string name="collapse_label">Collapse</string>
+    <string name="view_details_label">View details</string>
+    <string name="select_farming_method_btn">Select farming method →</string>
+
+    <!-- District Picker -->
+    <string name="select_district_placeholder">Select district</string>
+
+    <!-- Water / Market levels (Gemini enum values) -->
+    <string name="level_low">Low</string>
+    <string name="level_medium">Medium</string>
+    <string name="level_high">High</string>
+
+    <!-- Crop categories (Gemini enum values — adjust/add if you see others in real responses) -->
+    <string name="category_cereal">Cereal</string>
+    <string name="category_vegetable">Vegetable</string>
+    <string name="category_oilseed">Oilseed</string>
+    <string name="category_cash_crop">Cash Crop</string>
+    <string name="category_fiber">Fiber</string>
+    <string name="category_spice">Spice</string>
+
+    <!-- Crop names (from your fixed 15-item whitelist) -->
+    <string name="crop_rice">Rice</string>
+    <string name="crop_potato">Potato</string>
+    <string name="crop_jute">Jute</string>
+    <string name="crop_mustard">Mustard</string>
+    <string name="crop_wheat">Wheat</string>
+    <string name="crop_maize">Maize</string>
+    <string name="crop_sunflower">Sunflower</string>
+    <string name="crop_groundnut">Groundnut</string>
+    <string name="crop_sugarcane">Sugarcane</string>
+    <string name="crop_tomato">Tomato</string>
+    <string name="crop_brinjal">Brinjal</string>
+    <string name="crop_onion">Onion</string>
+    <string name="crop_cabbage">Cabbage</string>
+    <string name="crop_cauliflower">Cauliflower</string>
+    <string name="crop_chilli">Chilli</string>
+
+    <!-- Units used inside Gemini's free-text fields (word-swap translation) -->
+    <string name="unit_days">days</string>
+    <string name="unit_tons_per_acre">tons/acre</string>
+
+    <!-- Month short names -->
+    <string-array name="month_short_names">
+        <item>Jan</item><item>Feb</item><item>Mar</item><item>Apr</item>
+        <item>May</item><item>Jun</item><item>Jul</item><item>Aug</item>
+        <item>Sep</item><item>Oct</item><item>Nov</item><item>Dec</item>
+    </string-array>
+
+    <!-- District names -->
+    <string name="district_howrah">Howrah</string>
+    <string name="district_howrah_hint">Urban-fringe farmland</string>
+    <string name="district_hooghly">Hooghly</string>
+    <string name="district_hooghly_hint">Riverside alluvial plains</string>
+    <string name="district_purba_medinipur">Purba Medinipur</string>
+    <string name="district_purba_medinipur_hint">Coastal &amp; delta region</string>
+    <string name="district_paschim_medinipur">Paschim Medinipur</string>
+    <string name="district_paschim_medinipur_hint">Laterite upland terrain</string>
+    <string name="district_nadia">Nadia</string>
+    <string name="district_nadia_hint">Rich crop heartland</string>
+    <string name="district_murshidabad">Murshidabad</string>
+    <string name="district_murshidabad_hint">Historic silk &amp; paddy belt</string>
+
+    <!-- Seasons -->
+    <string name="season_kharif">Kharif</string>
+    <string name="season_kharif_months">Jun – Nov</string>
+    <string name="season_rabi">Rabi</string>
+    <string name="season_rabi_months">Nov – Apr</string>
+    <string name="season_summer">Summer</string>
+    <string name="season_summer_months">Mar – Jun</string>
+
+    <!-- Soil types -->
+    <string name="soil_clayey">Clayey</string>
+    <string name="soil_clayey_trait">High water retention</string>
+    <string name="soil_clayey_loam">Clayey Loam</string>
+    <string name="soil_clayey_loam_trait">Balanced drainage</string>
+    <string name="soil_loam">Loam</string>
+    <string name="soil_loam_trait">Ideal fertility</string>
+    <string name="soil_sandy">Sandy</string>
+    <string name="soil_sandy_trait">Fast draining</string>
+    <string name="match_score_label">Match score</string>
+
+    <string name="analysing_farm_conditions">Analysing your farm conditions…</string>
+    <string name="takes_just_a_moment">This takes just a moment</string>
+
+    <string name="ai_busy_title">AI is currently busy</string>
+    <string name="ai_busy_subtitle">Our AI is experiencing high demand.\nPlease wait a few moments and try again.</string>
+
+    <!-- Method Selection Screen -->
+    <string name="farming_title_suffix">farming</string>
+    <string name="choose_farming_method">Choose farming method</string>
+    <string name="compare_cost_yield">Compare cost, yield &amp; environmental impact</string>
+    <string name="select_your_method">Select your method</string>
+    <string name="estimated_cost_label">Estimated cost</string>
+    <string name="expected_yield_label2">Expected yield</string>
+    <string name="ai_cost_estimator_title">AI cost estimator</string>
+    <string name="ai_cost_estimator_subtitle">Get a personalised cost estimate for your farm</string>
+    <string name="farm_size_label">Farm size (Acres)</string>
+    <string name="farm_size_placeholder">e.g. 2.5</string>
+    <string name="estimating_label">Estimating…</string>
+    <string name="estimate_with_ai_btn">🤖  Estimate with AI</string>
+    <string name="enter_farm_size_warning">⚠ Please enter your farm size first.</string>
+    <string name="estimate_before_continue">🤖 Please estimate the farming cost before continuing.</string>
+    <string name="estimated_duration_label">Estimated duration</string>
+    <string name="labour_required_label">Labour required</string>
+    <string name="required_materials_title">Required materials</string>
+    <string name="ai_recommendation_title">AI recommendation</string>
+    <string name="advantages_title">Advantages</string>
+    <string name="disadvantages_title">Disadvantages</string>
+    <string name="continue_with_method_btn">Continue with %1$s farming</string>
+
+    <!-- Farm methods -->
+    <string name="method_organic">Organic</string>
+    <string name="method_organic_tagline">Natural inputs only</string>
+    <string name="method_inorganic">Inorganic</string>
+    <string name="method_inorganic_tagline">Chemical fertilizers &amp; sprays</string>
+    <string name="method_mixed">Mixed</string>
+    <string name="method_mixed_tagline">Best of both worlds</string>
+
+    <!-- Method loading / error -->
+    <string name="loading_farming_methods">Loading farming methods…</string>
+    <string name="just_a_moment">Just a moment</string>
+    <string name="could_not_load_methods">Could not load methods</string>
+
+    <string name="create_farm_title">Create farm</string>
+    <string name="farming_suffix">farming</string>
+    <string name="fill_details_subtitle">Fill in the details below to start your farm plan</string>
+    <string name="farm_details_label">Farm details</string>
+    <string name="farm_name_label">Farm name</string>
+    <string name="farm_name_placeholder">e.g. My Green Field</string>
+    <string name="farm_size_stat_label">Farm size</string>
+    <string name="acre_suffix">Acre</string>
+    <string name="confirmed_label">Confirmed</string>
+    <string name="starts_today_label">Starts today</string>
+    <string name="phase_plan_included_label">Phase plan included</string>
+    <string name="farm_plan_note">Once created, your farm plan will include a day-by-day schedule for the entire crop lifecycle.</string>
+    <string name="start_farming_btn">Start farming 🌱</string>
+
+    <!-- FarmCard -->
+    <string name="area_label">Area</string>
+    <string name="started_label">Started</string>
+    <string name="status_completed">Completed</string>
+    <string name="status_active">Active</string>
+    <string name="open_farm_btn">Open farm</string>
+
+    <!-- MyFarmsScreen -->
+    <string name="my_farms_title">My farms</string>
+    <string name="loading_farms">Loading your farms…</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="no_farms_yet">No farms yet</string>
+    <string name="no_farms_subtitle">Get a crop recommendation first,\nthen create your farm plan.</string>
+    <string name="get_crop_recommendation_btn">Get crop recommendation</string>
+    <string name="your_farm_portfolio">Your farm portfolio</string>
+    <string name="active_farms_count">%1$d active farms</string>
+    <string name="all_farms_label">All farms</string>
+
+    <string name="farm_details_title">Farm details</string>
+    <string name="loading_farm_details">Loading farm details…</string>
+    <string name="failed_to_load">Failed to load</string>
+    <string name="day_label">Day %1$d</string>
+    <string name="crop_progress_label">Crop progress</string>
+    <string name="tasks_completed_label">%1$d / %2$d Tasks Completed</string>
+    <string name="start_label">Start</string>
+    <string name="completed_label">Completed</string>
+    <string name="current_phase_label">Current phase</string>
+    <string name="harvest_complete_label">Harvest complete</string>
+    <string name="todays_tasks_label">Today\'s tasks</string>
+    <string name="tasks_count_label">%1$d tasks</string>
+    <string name="no_tasks_today">No specific tasks for today. Continue with current phase activities.</string>
+    <string name="inspection_due_title">Inspection Due</string>
+    <string name="next_ai_inspection_title">Next AI Inspection</string>
+    <string name="upload_image_today">Upload a new crop image today for the next AI analysis.</string>
+    <string name="next_inspection_in_days">Next inspection in %1$d day(s).</string>
+    <string name="ai_health_report_title">AI Health Report</string>
+    <string name="no_disease_detected">No disease detected</string>
+    <string name="no_disease_detected_emoji">🌾 No disease detected</string>
+    <string name="risk_level_placeholder">--</string>
+    <string name="update_crop_status_btn">Update crop status</string>
+    <string name="crop_health_history_btn">Crop health history</string>
+    <string name="farm_expenses_btn">Farm expenses</string>
+    <string name="full_schedule_label">Full schedule</string>
+    <string name="active_badge">Active</string>
+    <string name="done_badge">Done ✓</string>
+    <string name="phase_done_percent">Phase %1$d%% done</string>
+    <string name="got_it_btn">Got it</string>
+    <string name="health_score_label">Health score</string>
+    <string name="recommendations_title">💊 Recommendations</string>
+    <string name="label_medicine">Medicine</string>
+    <string name="label_quantity">Quantity</string>
+    <string name="label_irrigation">Irrigation</string>
+    <string name="label_fertilizer">Fertilizer</string>
+    <string name="todays_ai_tasks_title">✅ Today\'s AI tasks</string>
+    <string name="preventive_tips_title">🛡 Preventive tips</string>
+
+    <string name="preparing_farm_schedule">Preparing your schedule…</string>
+
+    <!-- values/strings.xml -->
+    <string name="continue_schedule_btn">Continue Schedule</string>
+    <string name="generating_next_phase">Generating next phase…</string>
+    <string name="schedule_complete_label">🎉 Full schedule generated</string>
+
+    <!-- Crop Health History -->
+    <string name="crop_health_history_title">Crop Health History</string>
+    <string name="no_updates_available">No updates available</string>
+    <string name="loading_history">Loading history…</string>
+    <string name="no_updates_yet">No updates yet</string>
+    <string name="no_updates_yet_subtitle">Analyze your crop to start building a health history</string>
+    <string name="update_log_title">Update Log</string>
+    <string name="healthy_label">Healthy</string>
+    <string name="healthy_emoji_label">🌾 Healthy</string>
+
+    <!-- Stats -->
+    <string name="stat_average">Average</string>
+    <string name="stat_best">Best</string>
+    <string name="stat_lowest">Lowest</string>
+
+    <!-- Health Trend Chart -->
+    <string name="health_trend_title">Health Trend</string>
+    <string name="latest_score_label">Latest: %1$s</string>
+    <string name="not_enough_trend_data">Not enough data yet — add another update to see the trend</string>
+
+    <!-- Report labels -->
+    <string name="severity_label">Severity</string>
+    <string name="phase_label">Phase</string>
+    <string name="recommendations_section_title">💊 Recommendations</string>
+    <string name="organic_treatment_label">Organic Treatment</string>
+    <string name="chemical_treatment_label">Chemical Treatment</string>
+
+    <!-- Risk level (fixed English token → localized display text) -->
+    <string name="risk_healthy">Healthy</string>
+    <string name="risk_low">Low Risk</string>
+    <string name="risk_medium">Medium Risk</string>
+    <string name="risk_high">High Risk</string>
+    <string name="risk_critical">Critical Risk</string>
+
+    <!-- Severity (fixed English token → localized display text) -->
+    <string name="severity_mild">Mild</string>
+    <string name="severity_moderate">Moderate</string>
+    <string name="severity_severe">Severe</string>
+
+    <!-- Daily Update Card -->
+    <string name="status_pest_detected">🔴 Pest Detected</string>
+    <string name="status_disease_found">🔴 Disease Found</string>
+    <string name="status_needs_attention">🟡 Needs Attention</string>
+    <string name="status_healthy">🟢 Healthy</string>
+    <string name="pest_found_label">Pest Found</string>
+    <string name="no_pest_label">No Pest</string>
+    <string name="see_full_analysis_btn">See Full Analysis →</string>
+
+    <string name="leaf_dark_green">Dark Green</string>
+    <string name="leaf_green">Green</string>
+    <string name="leaf_light_green">Light Green</string>
+    <string name="leaf_yellow">Yellow</string>
+    <string name="leaf_brown">Brown</string>
+    <string name="leaf_spotted">Spotted</string>
+    <string name="leaf_dry">Dry</string>
+
+    <string name="moisture_very_dry">Very Dry</string>
+    <string name="moisture_dry">Dry</string>
+    <string name="moisture_medium">Medium</string>
+    <string name="moisture_wet">Wet</string>
+    <string name="moisture_waterlogged">Waterlogged</string>
+
+    <string name="crop_health_analysis_title">Crop Health Analysis</string>
+    <string name="loading_farm_details_ellipsis">Loading farm details…</string>
+    <string name="mic_permission_required">Microphone permission required</string>
+    <string name="plant_height_label">Plant Height (cm)</string>
+    <string name="leaf_color_label">Leaf Color</string>
+    <string name="soil_moisture_label">Soil Moisture</string>
+    <string name="rice_leaf_image_label">Crop Leaf Image</string>
+    <string name="select_rice_leaf_image">Select crop leaf image</string>
+    <string name="change_image_label">Change image</string>
+    <string name="crop_cycle_completed">%1$d%% of crop cycle completed</string>
+    <string name="analyzing_with_gemini">Analyzing crop using Gemini AI…</string>
+    <string name="farmer_observation_title">👨‍🌾 Farmer Observation</string>
+    <string name="farmer_note_label">Farmer\'s Note</string>
+    <string name="farmer_note_placeholder">Tap mic to speak or type here…</string>
+    <string name="voice_input_desc">Voice input</string>
+    <string name="listening_speak_now">Listening… speak now</string>
+    <string name="stop_label">Stop</string>
+    <string name="clear_note_label">Clear note</string>
+    <string name="flowering_started_label">Flowering Started</string>
+    <string name="fruit_started_label">Fruit Started</string>
+    <string name="analyzing_ellipsis">Analyzing…</string>
+    <string name="analyze_crop_btn">Analyze Crop</string>
+    <string name="ai_analysis_title">🤖 AI Analysis</string>
+    <string name="disease_label">Disease</string>
+    <string name="none_detected">None detected</string>
+    <string name="confidence_label">Confidence</string>
+    <string name="risk_level_label">Risk Level</string>
+    <string name="ai_recommendations_title">AI Recommendations</string>
+    <string name="label_organic_treatment">Organic Treatment</string>
+    <string name="label_chemical_treatment">Chemical Treatment</string>
+    <string name="label_recommended_medicine">Recommended Medicine</string>
+    <string name="label_medicine_quantity">Medicine Quantity</string>
+    <string name="label_irrigation_advice">Irrigation Advice</string>
+    <string name="label_fertilizer_advice">Fertilizer Advice</string>
+    <string name="preventive_tips_plain">Preventive Tips</string>
+    <string name="next_inspection_recommended">🔍 Next inspection recommended in %1$d day(s)</string>
+    <string name="saving_label">Saving…</string>
+    <string name="save_analysis_btn">Save Analysis</string>
+
+    <string name="expense_tracker_title">Expense tracker</string>
+    <string name="budget_summary_label">Budget summary</string>
+    <string name="ai_estimated_label">AI estimated</string>
+    <string name="spent_so_far_label">Spent so far</string>
+    <string name="remaining_label">Remaining</string>
+    <string name="budget_used_label">Budget used</string>
+    <string name="budget_within_status">Within Budget ✅</string>
+    <string name="budget_fully_used_status">Budget Fully Used ⚠️</string>
+    <string name="budget_exceeded_status">Budget Exceeded ❌</string>
+    <string name="spending_by_category_label">Spending by category</string>
+    <string name="add_expense_btn">Add expense</string>
+    <string name="all_expenses_label">All expenses</string>
+    <string name="items_count_label">%d items</string>
+    <string name="no_expenses_yet_title">No expenses yet</string>
+    <string name="no_expenses_yet_subtitle">Tap \"Add expense\" to track your farm spending</string>
+    <string name="category_label">Category</string>
+    <string name="amount_label">Amount (₹)</string>
+    <string name="amount_placeholder">e.g. 2500</string>
+    <string name="note_label">Note</string>
+    <string name="note_placeholder">e.g. Purchased certified seeds</string>
+    <string name="save_expense_btn">Save expense</string>
+    <string name="invalid_amount_toast">Please enter a valid amount</string>
+
+    <string name="category_seed">Seed</string>
+    <string name="category_fertilizer">Fertilizer</string>
+    <string name="category_pesticide">Pesticide</string>
+    <string name="category_labour">Labour</string>
+    <string name="category_irrigation">Irrigation</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_equipment">Equipment</string>
+    <string name="category_others">Others</string>
+
+    <string name="profile_title">Profile</string>
+    <string name="profile_edit_desc">Edit profile</string>
+    <string name="profile_copy_id_desc">Copy ID</string>
+    <string name="profile_id_prefix">ID: %1$s…</string>
+    <string name="profile_default_farmer_name">Farmer</string>
+    <string name="profile_my_farms_title">My Farms</string>
+    <string name="profile_loading">Loading…</string>
+    <string name="profile_farms_registered">%1$d registered</string>
+    <string name="profile_about_support_title">About &amp; Support</string>
+    <string name="profile_app_name">Smart Farm</string>
+    <string name="profile_version">Version %1$s</string>
+    <string name="profile_customer_care_title">Customer Care</string>
+    <string name="profile_support_email_subject">Smart Farm Support</string>
+    <string name="profile_share_app_title">Share App</string>
+    <string name="profile_share_app_subtitle">Tell other farmers about Smart Farm</string>
+    <string name="profile_share_message">Check out Smart Farm — an app that helps farmers plan, track, and analyze crop health: %1$s</string>
+    <string name="profile_change_language_title">Change Language</string>
+    <string name="profile_change_language_subtitle">Tap to change your app language</string>
+    <string name="profile_logout_btn">Log Out</string>
+    <string name="profile_logout_dialog_title">Log out?</string>
+    <string name="profile_logout_dialog_text">You\'ll need to sign in again to access your farms.</string>
+    <string name="profile_cancel">Cancel</string>
+    <string name="profile_edit_sheet_title">Edit Profile</string>
+    <string name="profile_full_name_label">Full Name</string>
+    <string name="profile_phone_label">Phone Number</string>
+    <string name="profile_save_changes_btn">Save Changes</string>
+
+    <string name="repo_err_user_not_logged_in">User not logged in</string>
+    <string name="repo_err_profile_not_found">Profile not found</string>
+    <string name="repo_msg_profile_updated">Profile updated</string>
+    <string name="repo_msg_account_created">Account Created Successfully</string>
+    <string name="repo_msg_login_successful">Login Successful</string>
+    <string name="repo_err_method_not_found">Method not found</string>
+    <string name="repo_err_no_suitable_crops">No suitable crops found for selected conditions.</string>
+    <string name="repo_msg_farm_created">Farm Created</string>
+    <string name="repo_err_farm_not_found">Farm not found</string>
+    <string name="repo_err_schedule_not_found">Schedule not found</string>
+    <string name="repo_msg_updated">Updated</string>
+    <string name="repo_err_failed">Failed</string>
+    <string name="repo_msg_removed">Removed</string>
+    <string name="repo_err_generic">Error</string>
+    <string name="repo_msg_saved_successfully">Saved Successfully</string>
+    <string name="repo_err_failed_update_ai_status">Failed to update latest AI status</string>
+    <string name="repo_err_unknown">Unknown Error</string>
+    <string name="repo_err_no_data_found">No data found</string>
+    <string name="repo_err_update_not_found">Update not found</string>
+    <string name="repo_err_failed_parse_ai_status">Failed to parse AI status</string>
+    <string name="repo_err_no_ai_analysis_found">No AI analysis found</string>
+    <string name="repo_msg_expense_added">Expense Added</string>
+
+    <string name="farm_repo_msg_ai_saved">AI Analysis Saved Successfully</string>
+
+    <!-- Gemini AI messages -->
+    <string name="gemini_err_unavailable_retry">Gemini AI is temporarily unavailable. Please try again in a few moments.</string>
+    <string name="gemini_err_unavailable">Gemini AI is temporarily unavailable.</string>
+    <string name="gemini_err_busy">Gemini Busy</string>
+    <string name="gemini_err_unable_recommendations">Unable to generate crop recommendations.</string>
+    <string name="gemini_err_unable_phase">Unable to generate a valid phase.</string>
+    <string name="gemini_err_busy_retry">Gemini AI is busy. Please try again in a few moments.</string>
+    <string name="gemini_err_server_unavailable">Gemini server is temporarily unavailable.</string>
+    <string name="gemini_err_unable_recommendations2">Unable to generate recommendations.</string>
+
+    <!-- AppViewModel schedule messages -->
+    <string name="app_err_failed_prepare_schedule">Failed to prepare crop schedule</string>
+    <string name="app_err_farm_not_loaded">Farm not loaded yet, please try again</string>
+    <string name="app_err_failed_generate_next_phase">Failed to generate next phase</string>
 </resources>

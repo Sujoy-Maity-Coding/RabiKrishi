@@ -1,0 +1,433 @@
+<resources>
+    <string name="app_title_dashboard">রবি কৃষি</string>
+
+    <string name="home_greeting">শুভ দিন, কৃষক 👋</string>
+    <string name="home_subtitle">আজ আপনি কী করতে চান?</string>
+    <string name="stat_districts">৬টি জেলা</string>
+    <string name="stat_seasons">৩টি ঋতু</string>
+    <string name="stat_soil_types">৪টি মাটির ধরন</string>
+    <string name="section_features">বৈশিষ্ট্য</string>
+    <string name="feature_crop_title">ফসল সুপারিশ</string>
+    <string name="feature_crop_subtitle">আপনার খামারের জন্য সেরা ফসল খুঁজুন</string>
+    <string name="feature_farms_title">আমার খামার</string>
+    <string name="feature_farms_subtitle">আপনার খামার পরিচালনা ও ট্র্যাক করুন</string>
+    <string name="feature_profile_title">আমার প্রোফাইল</string>
+    <string name="feature_profile_subtitle">আপনার অ্যাকাউন্ট দেখুন ও সম্পাদনা করুন</string>
+
+    <string name="crop_reco_title">ফসল সুপারিশ</string>
+    <string name="crop_reco_hero_title">আপনার খামার সম্পর্কে বলুন</string>
+    <string name="crop_reco_hero_subtitle">৪টি দ্রুত তথ্য → ব্যক্তিগতকৃত ফসলের তালিকা</string>
+    <string name="step_district">জেলা</string>
+    <string name="step_month">মাস</string>
+    <string name="step_season">ঋতু</string>
+    <string name="step_soil">মাটি</string>
+    <string name="label_your_district">আপনার জেলা</string>
+    <string name="label_planting_month">রোপণের মাস</string>
+    <string name="label_crop_season">ফসলের ঋতু</string>
+    <string name="label_soil_type">মাটির ধরন</string>
+    <string name="btn_get_recommendations">আমার সুপারিশ দেখুন →</string>
+    <string name="btn_complete_fields">চালিয়ে যেতে সব তথ্য পূরণ করুন</string>
+
+    <string name="recommended_crops_title">প্রস্তাবিত ফসল</string>
+    <string name="best_matches_label">আপনার জন্য সেরা মিল</string>
+    <string name="crops_count">%1$d ফসল</string>
+
+    <string name="analysis_complete">বিশ্লেষণ সম্পূর্ণ ✓</string>
+    <string name="soil_suffix">মাটি</string>
+    <string name="crops_label">ফসল</string>
+
+    <string name="match_suffix">%1$d%% মিল</string>
+    <string name="crop_details_label">ফসলের বিবরণ</string>
+    <string name="water_requirement_label">জলের প্রয়োজন</string>
+    <string name="growth_duration_label">বৃদ্ধির সময়কাল</string>
+    <string name="expected_yield_label">প্রত্যাশিত ফলন</string>
+    <string name="market_demand_label">বাজারের চাহিদা</string>
+    <string name="crop_category_label">ফসলের বিভাগ</string>
+    <string name="collapse_label">সংক্ষিপ্ত করুন</string>
+    <string name="view_details_label">বিস্তারিত দেখুন</string>
+    <string name="select_farming_method_btn">চাষ পদ্ধতি নির্বাচন করুন →</string>
+
+    <string name="select_district_placeholder">জেলা নির্বাচন করুন</string>
+
+    <string name="level_low">কম</string>
+    <string name="level_medium">মাঝারি</string>
+    <string name="level_high">বেশি</string>
+
+    <string name="category_cereal">শস্য</string>
+    <string name="category_vegetable">সবজি</string>
+    <string name="category_oilseed">তৈলবীজ</string>
+    <string name="category_cash_crop">অর্থকরী ফসল</string>
+    <string name="category_fiber">তন্তু ফসল</string>
+    <string name="category_spice">মসলা</string>
+
+    <string name="crop_rice">ধান</string>
+    <string name="crop_potato">আলু</string>
+    <string name="crop_jute">পাট</string>
+    <string name="crop_mustard">সরিষা</string>
+    <string name="crop_wheat">গম</string>
+    <string name="crop_maize">ভুট্টা</string>
+    <string name="crop_sunflower">সূর্যমুখী</string>
+    <string name="crop_groundnut">চিনাবাদাম</string>
+    <string name="crop_sugarcane">আখ</string>
+    <string name="crop_tomato">টমেটো</string>
+    <string name="crop_brinjal">বেগুন</string>
+    <string name="crop_onion">পেঁয়াজ</string>
+    <string name="crop_cabbage">বাঁধাকপি</string>
+    <string name="crop_cauliflower">ফুলকপি</string>
+    <string name="crop_chilli">লঙ্কা</string>
+
+    <string name="unit_days">দিন</string>
+    <string name="unit_tons_per_acre">টন/একর</string>
+
+    <string-array name="month_short_names">
+        <item>জানু</item><item>ফেব্রু</item><item>মার্চ</item><item>এপ্রি</item>
+        <item>মে</item><item>জুন</item><item>জুলা</item><item>আগ</item>
+        <item>সেপ্টে</item><item>অক্টো</item><item>নভে</item><item>ডিসে</item>
+    </string-array>
+
+    <string name="district_howrah">হাওড়া</string>
+    <string name="district_howrah_hint">শহরতলির কৃষিজমি</string>
+    <string name="district_hooghly">হুগলি</string>
+    <string name="district_hooghly_hint">নদীতীরবর্তী পলিমাটি সমভূমি</string>
+    <string name="district_purba_medinipur">পূর্ব মেদিনীপুর</string>
+    <string name="district_purba_medinipur_hint">উপকূলীয় ও ব-দ্বীপ অঞ্চল</string>
+    <string name="district_paschim_medinipur">পশ্চিম মেদিনীপুর</string>
+    <string name="district_paschim_medinipur_hint">ল্যাটেরাইট উচ্চভূমি</string>
+    <string name="district_nadia">নদিয়া</string>
+    <string name="district_nadia_hint">সমৃদ্ধ ফসলের কেন্দ্রস্থল</string>
+    <string name="district_murshidabad">মুর্শিদাবাদ</string>
+    <string name="district_murshidabad_hint">ঐতিহাসিক রেশম ও ধান অঞ্চল</string>
+
+    <string name="season_kharif">খরিফ</string>
+    <string name="season_kharif_months">জুন – নভে</string>
+    <string name="season_rabi">রবি</string>
+    <string name="season_rabi_months">নভে – এপ্রি</string>
+    <string name="season_summer">গ্রীষ্ম</string>
+    <string name="season_summer_months">মার্চ – জুন</string>
+
+    <string name="soil_clayey">এঁটেল মাটি</string>
+    <string name="soil_clayey_trait">উচ্চ জলধারণ ক্ষমতা</string>
+    <string name="soil_clayey_loam">এঁটেল দোআঁশ</string>
+    <string name="soil_clayey_loam_trait">সুষম নিষ্কাশন</string>
+    <string name="soil_loam">দোআঁশ</string>
+    <string name="soil_loam_trait">আদর্শ উর্বরতা</string>
+    <string name="soil_sandy">বেলে মাটি</string>
+    <string name="soil_sandy_trait">দ্রুত নিষ্কাশনযোগ্য</string>
+    <string name="match_score_label">মিলের স্কোর</string>
+
+    <string name="analysing_farm_conditions">আপনার খামারের অবস্থা বিশ্লেষণ করা হচ্ছে…</string>
+    <string name="takes_just_a_moment">এটি মাত্র কয়েক মুহূর্ত সময় নেবে</string>
+
+    <string name="ai_busy_title">AI বর্তমানে ব্যস্ত</string>
+    <string name="ai_busy_subtitle">আমাদের AI-তে উচ্চ চাহিদা রয়েছে।\nঅনুগ্রহ করে কিছুক্ষণ অপেক্ষা করে আবার চেষ্টা করুন।</string>
+
+    <string name="farming_title_suffix">চাষ</string>
+    <string name="choose_farming_method">চাষ পদ্ধতি নির্বাচন করুন</string>
+    <string name="compare_cost_yield">খরচ, ফলন ও পরিবেশগত প্রভাব তুলনা করুন</string>
+    <string name="select_your_method">আপনার পদ্ধতি নির্বাচন করুন</string>
+    <string name="estimated_cost_label">আনুমানিক খরচ</string>
+    <string name="expected_yield_label2">প্রত্যাশিত ফলন</string>
+    <string name="ai_cost_estimator_title">AI খরচ অনুমানকারী</string>
+    <string name="ai_cost_estimator_subtitle">আপনার খামারের জন্য ব্যক্তিগতকৃত খরচের অনুমান পান</string>
+    <string name="farm_size_label">খামারের আয়তন (একর)</string>
+    <string name="farm_size_placeholder">যেমন 2.5</string>
+    <string name="estimating_label">অনুমান করা হচ্ছে…</string>
+    <string name="estimate_with_ai_btn">🤖  AI দিয়ে অনুমান করুন</string>
+    <string name="enter_farm_size_warning">⚠ প্রথমে আপনার খামারের আয়তন লিখুন।</string>
+    <string name="estimate_before_continue">🤖 চালিয়ে যাওয়ার আগে চাষের খরচ অনুমান করুন।</string>
+    <string name="estimated_duration_label">আনুমানিক সময়কাল</string>
+    <string name="labour_required_label">প্রয়োজনীয় শ্রমিক</string>
+    <string name="required_materials_title">প্রয়োজনীয় উপকরণ</string>
+    <string name="ai_recommendation_title">AI সুপারিশ</string>
+    <string name="advantages_title">সুবিধা</string>
+    <string name="disadvantages_title">অসুবিধা</string>
+    <string name="continue_with_method_btn">%1$s চাষের সাথে এগিয়ে যান</string>
+
+    <string name="method_organic">জৈব</string>
+    <string name="method_organic_tagline">শুধুমাত্র প্রাকৃতিক উপকরণ</string>
+    <string name="method_inorganic">অজৈব</string>
+    <string name="method_inorganic_tagline">রাসায়নিক সার ও স্প্রে</string>
+    <string name="method_mixed">মিশ্র</string>
+    <string name="method_mixed_tagline">উভয়ের সেরা মিশ্রণ</string>
+
+    <string name="loading_farming_methods">চাষ পদ্ধতি লোড হচ্ছে…</string>
+    <string name="just_a_moment">একটু অপেক্ষা করুন</string>
+    <string name="could_not_load_methods">পদ্ধতি লোড করা যায়নি</string>
+
+    <string name="create_farm_title">খামার তৈরি করুন</string>
+    <string name="farming_suffix">চাষ</string>
+    <string name="fill_details_subtitle">আপনার খামার পরিকল্পনা শুরু করতে নিচের তথ্য পূরণ করুন</string>
+    <string name="farm_details_label">খামারের বিবরণ</string>
+    <string name="farm_name_label">খামারের নাম</string>
+    <string name="farm_name_placeholder">যেমন আমার সবুজ ক্ষেত</string>
+    <string name="farm_size_stat_label">খামারের আয়তন</string>
+    <string name="acre_suffix">একর</string>
+    <string name="confirmed_label">নিশ্চিত করা হয়েছে</string>
+    <string name="starts_today_label">আজ থেকে শুরু</string>
+    <string name="phase_plan_included_label">ধাপ পরিকল্পনা অন্তর্ভুক্ত</string>
+    <string name="farm_plan_note">তৈরি হওয়ার পর, আপনার খামার পরিকল্পনায় সম্পূর্ণ ফসলের জীবনচক্রের জন্য দিন-ভিত্তিক সময়সূচি থাকবে।</string>
+    <string name="start_farming_btn">চাষ শুরু করুন 🌱</string>
+
+    <string name="area_label">আয়তন</string>
+    <string name="started_label">শুরু হয়েছে</string>
+    <string name="status_completed">সম্পন্ন</string>
+    <string name="status_active">সক্রিয়</string>
+    <string name="open_farm_btn">খামার খুলুন</string>
+
+    <string name="my_farms_title">আমার খামার</string>
+    <string name="loading_farms">আপনার খামার লোড হচ্ছে…</string>
+    <string name="something_went_wrong">কিছু ভুল হয়েছে</string>
+    <string name="no_farms_yet">এখনো কোনো খামার নেই</string>
+    <string name="no_farms_subtitle">প্রথমে একটি ফসল সুপারিশ নিন,\nতারপর আপনার খামার পরিকল্পনা তৈরি করুন।</string>
+    <string name="get_crop_recommendation_btn">ফসল সুপারিশ পান</string>
+    <string name="your_farm_portfolio">আপনার খামার তালিকা</string>
+    <string name="active_farms_count">%1$d সক্রিয় খামার</string>
+    <string name="all_farms_label">সব খামার</string>
+
+    <string name="farm_details_title">খামারের বিবরণ</string>
+    <string name="loading_farm_details">খামারের বিবরণ লোড হচ্ছে…</string>
+    <string name="failed_to_load">লোড করতে ব্যর্থ</string>
+    <string name="day_label">দিন %1$d</string>
+    <string name="crop_progress_label">ফসলের অগ্রগতি</string>
+    <string name="tasks_completed_label">%1$d / %2$d কাজ সম্পন্ন</string>
+    <string name="start_label">শুরু</string>
+    <string name="completed_label">সম্পন্ন</string>
+    <string name="current_phase_label">বর্তমান পর্যায়</string>
+    <string name="harvest_complete_label">ফসল কাটা সম্পন্ন</string>
+    <string name="todays_tasks_label">আজকের কাজ</string>
+    <string name="tasks_count_label">%1$d টি কাজ</string>
+    <string name="no_tasks_today">আজকের জন্য নির্দিষ্ট কোনো কাজ নেই। বর্তমান পর্যায়ের কার্যক্রম চালিয়ে যান।</string>
+    <string name="inspection_due_title">পরিদর্শন বাকি</string>
+    <string name="next_ai_inspection_title">পরবর্তী AI পরিদর্শন</string>
+    <string name="upload_image_today">পরবর্তী AI বিশ্লেষণের জন্য আজই একটি নতুন ফসলের ছবি আপলোড করুন।</string>
+    <string name="next_inspection_in_days">পরবর্তী পরিদর্শন %1$d দিনে।</string>
+    <string name="ai_health_report_title">AI স্বাস্থ্য প্রতিবেদন</string>
+    <string name="no_disease_detected">কোনো রোগ শনাক্ত হয়নি</string>
+    <string name="no_disease_detected_emoji">🌾 কোনো রোগ শনাক্ত হয়নি</string>
+    <string name="risk_level_placeholder">--</string>
+    <string name="update_crop_status_btn">ফসলের অবস্থা আপডেট করুন</string>
+    <string name="crop_health_history_btn">ফসলের স্বাস্থ্য ইতিহাস</string>
+    <string name="farm_expenses_btn">খামারের খরচ</string>
+    <string name="full_schedule_label">সম্পূর্ণ সময়সূচি</string>
+    <string name="active_badge">সক্রিয়</string>
+    <string name="done_badge">সম্পন্ন ✓</string>
+    <string name="phase_done_percent">পর্যায় %1$d%% সম্পন্ন</string>
+    <string name="got_it_btn">বুঝেছি</string>
+    <string name="health_score_label">স্বাস্থ্য স্কোর</string>
+    <string name="recommendations_title">💊 সুপারিশ</string>
+    <string name="label_medicine">ওষুধ</string>
+    <string name="label_quantity">পরিমাণ</string>
+    <string name="label_irrigation">সেচ</string>
+    <string name="label_fertilizer">সার</string>
+    <string name="todays_ai_tasks_title">✅ আজকের AI কাজ</string>
+    <string name="preventive_tips_title">🛡 প্রতিরোধমূলক পরামর্শ</string>
+
+    <!-- values-bn/strings.xml -->
+    <string name="preparing_farm_schedule">আপনার সময়সূচী প্রস্তুত করা হচ্ছে…</string>
+
+    <!-- values-bn/strings.xml -->
+    <string name="continue_schedule_btn">সময়সূচী চালিয়ে যান</string>
+    <string name="generating_next_phase">পরবর্তী ধাপ তৈরি করা হচ্ছে…</string>
+    <string name="schedule_complete_label">🎉 সম্পূর্ণ সময়সূচী তৈরি হয়েছে</string>
+
+    <!-- Crop Health History -->
+    <string name="crop_health_history_title">ফসলের স্বাস্থ্য ইতিহাস</string>
+    <string name="no_updates_available">কোনো আপডেট উপলব্ধ নেই</string>
+    <string name="loading_history">ইতিহাস লোড হচ্ছে…</string>
+    <string name="no_updates_yet">এখনও কোনো আপডেট নেই</string>
+    <string name="no_updates_yet_subtitle">স্বাস্থ্য ইতিহাস তৈরি করতে আপনার ফসল বিশ্লেষণ করুন</string>
+    <string name="update_log_title">আপডেট লগ</string>
+    <string name="healthy_label">সুস্থ</string>
+    <string name="healthy_emoji_label">🌾 সুস্থ</string>
+
+    <!-- Stats -->
+    <string name="stat_average">গড়</string>
+    <string name="stat_best">সর্বোত্তম</string>
+    <string name="stat_lowest">সর্বনিম্ন</string>
+
+    <!-- Health Trend Chart -->
+    <string name="health_trend_title">স্বাস্থ্যের প্রবণতা</string>
+    <string name="latest_score_label">সাম্প্রতিক: %1$s</string>
+    <string name="not_enough_trend_data">এখনও পর্যাপ্ত তথ্য নেই — প্রবণতা দেখতে আরেকটি আপডেট যোগ করুন</string>
+
+    <!-- Report labels -->
+    <string name="severity_label">তীব্রতা</string>
+    <string name="phase_label">পর্যায়</string>
+    <string name="recommendations_section_title">💊 সুপারিশ</string>
+    <string name="organic_treatment_label">জৈব চিকিৎসা</string>
+    <string name="chemical_treatment_label">রাসায়নিক চিকিৎসা</string>
+
+    <!-- Risk level (fixed English token → localized display text) -->
+    <string name="risk_healthy">সুস্থ</string>
+    <string name="risk_low">কম ঝুঁকি</string>
+    <string name="risk_medium">মাঝারি ঝুঁকি</string>
+    <string name="risk_high">উচ্চ ঝুঁকি</string>
+    <string name="risk_critical">গুরুতর ঝুঁকি</string>
+
+    <!-- Severity (fixed English token → localized display text) -->
+    <string name="severity_mild">মৃদু</string>
+    <string name="severity_moderate">মাঝারি</string>
+    <string name="severity_severe">গুরুতর</string>
+
+    <!-- Daily Update Card -->
+    <string name="status_pest_detected">🔴 পোকা পাওয়া গেছে</string>
+    <string name="status_disease_found">🔴 রোগ পাওয়া গেছে</string>
+    <string name="status_needs_attention">🟡 নজর দেওয়া প্রয়োজন</string>
+    <string name="status_healthy">🟢 সুস্থ</string>
+    <string name="pest_found_label">পোকা পাওয়া গেছে</string>
+    <string name="no_pest_label">কোনো পোকা নেই</string>
+    <string name="see_full_analysis_btn">সম্পূর্ণ বিশ্লেষণ দেখুন →</string>
+
+    <string name="leaf_dark_green">গাঢ় সবুজ</string>
+    <string name="leaf_green">সবুজ</string>
+    <string name="leaf_light_green">হালকা সবুজ</string>
+    <string name="leaf_yellow">হলুদ</string>
+    <string name="leaf_brown">বাদামী</string>
+    <string name="leaf_spotted">দাগযুক্ত</string>
+    <string name="leaf_dry">শুকনো</string>
+
+    <string name="moisture_very_dry">অত্যন্ত শুষ্ক</string>
+    <string name="moisture_dry">শুষ্ক</string>
+    <string name="moisture_medium">মাঝারি</string>
+    <string name="moisture_wet">ভেজা</string>
+    <string name="moisture_waterlogged">জলাবদ্ধ</string>
+
+    <string name="crop_health_analysis_title">ফসলের স্বাস্থ্য বিশ্লেষণ</string>
+    <string name="loading_farm_details_ellipsis">খামারের বিবরণ লোড হচ্ছে…</string>
+    <string name="mic_permission_required">মাইক্রোফোন অনুমতি প্রয়োজন</string>
+    <string name="plant_height_label">গাছের উচ্চতা (সেমি)</string>
+    <string name="leaf_color_label">পাতার রঙ</string>
+    <string name="soil_moisture_label">মাটির আর্দ্রতা</string>
+    <string name="rice_leaf_image_label">ফসলের পাতার ছবি</string>
+    <string name="select_rice_leaf_image">ফসলের পাতার ছবি নির্বাচন করুন</string>
+    <string name="change_image_label">ছবি পরিবর্তন করুন</string>
+    <string name="crop_cycle_completed">ফসল চক্রের %1$d%% সম্পন্ন</string>
+    <string name="analyzing_with_gemini">Gemini AI দিয়ে ফসল বিশ্লেষণ করা হচ্ছে…</string>
+    <string name="farmer_observation_title">👨‍🌾 কৃষকের পর্যবেক্ষণ</string>
+    <string name="farmer_note_label">কৃষকের নোট</string>
+    <string name="farmer_note_placeholder">কথা বলতে মাইকে চাপুন অথবা এখানে টাইপ করুন…</string>
+    <string name="voice_input_desc">ভয়েস ইনপুট</string>
+    <string name="listening_speak_now">শুনছি… এখন বলুন</string>
+    <string name="stop_label">বন্ধ করুন</string>
+    <string name="clear_note_label">নোট মুছুন</string>
+    <string name="flowering_started_label">ফুল আসা শুরু হয়েছে</string>
+    <string name="fruit_started_label">ফল আসা শুরু হয়েছে</string>
+    <string name="analyzing_ellipsis">বিশ্লেষণ করা হচ্ছে…</string>
+    <string name="analyze_crop_btn">ফসল বিশ্লেষণ করুন</string>
+    <string name="ai_analysis_title">🤖 AI বিশ্লেষণ</string>
+    <string name="disease_label">রোগ</string>
+    <string name="none_detected">কিছু পাওয়া যায়নি</string>
+    <string name="confidence_label">নিশ্চিততা</string>
+    <string name="risk_level_label">ঝুঁকির মাত্রা</string>
+    <string name="ai_recommendations_title">AI সুপারিশ</string>
+    <string name="label_organic_treatment">জৈব চিকিৎসা</string>
+    <string name="label_chemical_treatment">রাসায়নিক চিকিৎসা</string>
+    <string name="label_recommended_medicine">প্রস্তাবিত ওষুধ</string>
+    <string name="label_medicine_quantity">ওষুধের পরিমাণ</string>
+    <string name="label_irrigation_advice">সেচ পরামর্শ</string>
+    <string name="label_fertilizer_advice">সার পরামর্শ</string>
+    <string name="preventive_tips_plain">প্রতিরোধমূলক পরামর্শ</string>
+    <string name="next_inspection_recommended">🔍 পরবর্তী পরিদর্শন %1$d দিনে সুপারিশ করা হচ্ছে</string>
+    <string name="saving_label">সংরক্ষণ করা হচ্ছে…</string>
+    <string name="save_analysis_btn">বিশ্লেষণ সংরক্ষণ করুন</string>
+
+    <string name="expense_tracker_title">খরচ ট্র্যাকার</string>
+    <string name="budget_summary_label">বাজেট সারাংশ</string>
+    <string name="ai_estimated_label">এআই অনুমানিত</string>
+    <string name="spent_so_far_label">এখন পর্যন্ত খরচ</string>
+    <string name="remaining_label">অবশিষ্ট</string>
+    <string name="budget_used_label">ব্যবহৃত বাজেট</string>
+    <string name="budget_within_status">বাজেটের মধ্যে ✅</string>
+    <string name="budget_fully_used_status">বাজেট সম্পূর্ণ ব্যবহৃত ⚠️</string>
+    <string name="budget_exceeded_status">বাজেট অতিক্রান্ত ❌</string>
+    <string name="spending_by_category_label">বিভাগ অনুযায়ী খরচ</string>
+    <string name="add_expense_btn">খরচ যোগ করুন</string>
+    <string name="all_expenses_label">সমস্ত খরচ</string>
+    <string name="items_count_label">%d টি আইটেম</string>
+    <string name="no_expenses_yet_title">এখনো কোনো খরচ নেই</string>
+    <string name="no_expenses_yet_subtitle">আপনার খামারের খরচ ট্র্যাক করতে \"খরচ যোগ করুন\"-এ ট্যাপ করুন</string>
+    <string name="category_label">বিভাগ</string>
+    <string name="amount_label">পরিমাণ (₹)</string>
+    <string name="amount_placeholder">যেমন ২৫০০</string>
+    <string name="note_label">নোট</string>
+    <string name="note_placeholder">যেমন প্রত্যয়িত বীজ কেনা হয়েছে</string>
+    <string name="save_expense_btn">খরচ সংরক্ষণ করুন</string>
+    <string name="invalid_amount_toast">অনুগ্রহ করে একটি বৈধ পরিমাণ লিখুন</string>
+
+    <string name="category_seed">বীজ</string>
+    <string name="category_fertilizer">সার</string>
+    <string name="category_pesticide">কীটনাশক</string>
+    <string name="category_labour">শ্রমিক</string>
+    <string name="category_irrigation">সেচ</string>
+    <string name="category_transport">পরিবহন</string>
+    <string name="category_equipment">যন্ত্রপাতি</string>
+    <string name="category_others">অন্যান্য</string>
+
+    <string name="profile_title">প্রোফাইল</string>
+    <string name="profile_edit_desc">প্রোফাইল সম্পাদনা করুন</string>
+    <string name="profile_copy_id_desc">আইডি কপি করুন</string>
+    <string name="profile_id_prefix">আইডি: %1$s…</string>
+    <string name="profile_default_farmer_name">কৃষক</string>
+    <string name="profile_my_farms_title">আমার খামার</string>
+    <string name="profile_loading">লোড হচ্ছে…</string>
+    <string name="profile_farms_registered">%1$d নিবন্ধিত</string>
+    <string name="profile_about_support_title">সম্পর্কে ও সহায়তা</string>
+    <string name="profile_app_name">স্মার্ট ফার্ম</string>
+    <string name="profile_version">সংস্করণ %1$s</string>
+    <string name="profile_customer_care_title">গ্রাহক সেবা</string>
+    <string name="profile_support_email_subject">স্মার্ট ফার্ম সহায়তা</string>
+    <string name="profile_share_app_title">অ্যাপ শেয়ার করুন</string>
+    <string name="profile_share_app_subtitle">অন্য কৃষকদের স্মার্ট ফার্ম সম্পর্কে জানান</string>
+    <string name="profile_share_message">স্মার্ট ফার্ম দেখুন — একটি অ্যাপ যা কৃষকদের ফসল পরিকল্পনা, ট্র্যাক এবং বিশ্লেষণ করতে সাহায্য করে: %1$s</string>
+    <string name="profile_change_language_title">ভাষা পরিবর্তন করুন</string>
+    <string name="profile_change_language_subtitle">আপনার অ্যাপের ভাষা পরিবর্তন করতে ট্যাপ করুন</string>
+    <string name="profile_logout_btn">লগ আউট</string>
+    <string name="profile_logout_dialog_title">লগ আউট করবেন?</string>
+    <string name="profile_logout_dialog_text">আপনার খামারে প্রবেশ করতে আপনাকে আবার সাইন ইন করতে হবে।</string>
+    <string name="profile_cancel">বাতিল</string>
+    <string name="profile_edit_sheet_title">প্রোফাইল সম্পাদনা করুন</string>
+    <string name="profile_full_name_label">পুরো নাম</string>
+    <string name="profile_phone_label">ফোন নম্বর</string>
+    <string name="profile_save_changes_btn">পরিবর্তন সংরক্ষণ করুন</string>
+
+    <!-- Repository & ViewModel error/status messages -->
+    <string name="repo_err_user_not_logged_in">ব্যবহারকারী লগ ইন করেননি</string>
+    <string name="repo_err_profile_not_found">প্রোফাইল পাওয়া যায়নি</string>
+    <string name="repo_msg_profile_updated">প্রোফাইল আপডেট হয়েছে</string>
+    <string name="repo_msg_account_created">অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে</string>
+    <string name="repo_msg_login_successful">লগইন সফল হয়েছে</string>
+    <string name="repo_err_method_not_found">পদ্ধতি পাওয়া যায়নি</string>
+    <string name="repo_err_no_suitable_crops">নির্বাচিত পরিস্থিতির জন্য উপযুক্ত কোনো ফসল পাওয়া যায়নি।</string>
+    <string name="repo_msg_farm_created">খামার তৈরি হয়েছে</string>
+    <string name="repo_err_farm_not_found">খামার পাওয়া যায়নি</string>
+    <string name="repo_err_schedule_not_found">সময়সূচী পাওয়া যায়নি</string>
+    <string name="repo_msg_updated">আপডেট হয়েছে</string>
+    <string name="repo_err_failed">ব্যর্থ হয়েছে</string>
+    <string name="repo_msg_removed">সরানো হয়েছে</string>
+    <string name="repo_err_generic">ত্রুটি</string>
+    <string name="repo_msg_saved_successfully">সফলভাবে সংরক্ষিত হয়েছে</string>
+    <string name="repo_err_failed_update_ai_status">সর্বশেষ AI স্ট্যাটাস আপডেট করতে ব্যর্থ হয়েছে</string>
+    <string name="repo_err_unknown">অজানা ত্রুটি</string>
+    <string name="repo_err_no_data_found">কোনো তথ্য পাওয়া যায়নি</string>
+    <string name="repo_err_update_not_found">আপডেট পাওয়া যায়নি</string>
+    <string name="repo_err_failed_parse_ai_status">AI স্ট্যাটাস পার্স করতে ব্যর্থ হয়েছে</string>
+    <string name="repo_err_no_ai_analysis_found">কোনো AI বিশ্লেষণ পাওয়া যায়নি</string>
+    <string name="repo_msg_expense_added">খরচ যোগ করা হয়েছে</string>
+
+    <string name="farm_repo_msg_ai_saved">AI বিশ্লেষণ সফলভাবে সংরক্ষিত হয়েছে</string>
+
+    <!-- Gemini AI messages -->
+    <string name="gemini_err_unavailable_retry">Gemini AI সাময়িকভাবে অনুপলব্ধ। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।</string>
+    <string name="gemini_err_unavailable">Gemini AI সাময়িকভাবে অনুপলব্ধ।</string>
+    <string name="gemini_err_busy">Gemini ব্যস্ত আছে</string>
+    <string name="gemini_err_unable_recommendations">ফসলের সুপারিশ তৈরি করা যায়নি।</string>
+    <string name="gemini_err_unable_phase">একটি বৈধ পর্যায় তৈরি করা যায়নি।</string>
+    <string name="gemini_err_busy_retry">Gemini AI ব্যস্ত আছে। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।</string>
+    <string name="gemini_err_server_unavailable">Gemini সার্ভার সাময়িকভাবে অনুপলব্ধ।</string>
+    <string name="gemini_err_unable_recommendations2">সুপারিশ তৈরি করা যায়নি।</string>
+
+    <!-- AppViewModel schedule messages -->
+    <string name="app_err_failed_prepare_schedule">ফসলের সময়সূচী প্রস্তুত করতে ব্যর্থ হয়েছে</string>
+    <string name="app_err_farm_not_loaded">খামার এখনও লোড হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন</string>
+    <string name="app_err_failed_generate_next_phase">পরবর্তী পর্যায় তৈরি করতে ব্যর্থ হয়েছে</string>
+</resources>

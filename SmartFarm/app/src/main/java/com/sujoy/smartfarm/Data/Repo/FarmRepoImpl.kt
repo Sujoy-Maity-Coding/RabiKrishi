@@ -1,5 +1,6 @@
 package com.sujoy.smartfarm.Data.Repo
 
+import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -7,13 +8,16 @@ import com.sujoy.smartfarm.Common.ResultState
 import com.sujoy.smartfarm.Domain.model.DailyFarmUpdate
 import com.sujoy.smartfarm.Domain.model.Expense.Expense
 import com.sujoy.smartfarm.Domain.repo.FarmRepo
+import com.sujoy.smartfarm.R
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class FarmRepoImpl @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    @ApplicationContext private val context: Context
 
 ) : FarmRepo {
 
@@ -59,7 +63,7 @@ class FarmRepoImpl @Inject constructor(
 
                             ResultState.Success(
 
-                                "AI Analysis Saved Successfully"
+                                context.getString(R.string.farm_repo_msg_ai_saved)
 
                             )
 
@@ -73,7 +77,7 @@ class FarmRepoImpl @Inject constructor(
 
                             ResultState.Error(
 
-                                it.message ?: "Unknown Error"
+                                it.message ?: context.getString(R.string.repo_err_unknown)
 
                             )
 
@@ -89,7 +93,7 @@ class FarmRepoImpl @Inject constructor(
 
                     ResultState.Error(
 
-                        it.message ?: "Unknown Error"
+                        it.message ?: context.getString(R.string.repo_err_unknown)
 
                     )
 

@@ -1,7 +1,5 @@
 package com.sujoy.smartfarm.Domain.model
 
-import com.sujoy.smartfarm.Domain.model.CropMethod.MaterialItem
-
 data class Farm(
 
     var farmId: String = "",
@@ -11,6 +9,9 @@ data class Farm(
     var cropName: String = "",
 
     var farmingMethod: String = "",
+
+    var district: String = "",   // ← added
+    var season: String = "",       // ← added
 
     var landArea: String = "",
 
@@ -37,4 +38,5 @@ data class Farm(
 
     var aiNotes: String = ""
 
+    // scheduleRef removed — schedule now lives under Farmers/{uid}/farms/{farmId}/schedule/current
 )

@@ -32,12 +32,21 @@ import com.sujoy.smartfarm.Presentation.Navigation.FarmerRoutes
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
 import com.sujoy.smartfarm.Presentation.ViewModel.GeminiViewModel
 import com.sujoy.smartfarm.ui.theme.*
+import androidx.compose.ui.res.stringResource
+import com.sujoy.smartfarm.R
+import  com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedCropName
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.Presentation.Utils.FarmMethod.translatedMethodLabel
+import com.sujoy.smartfarm.Presentation.Utils.FarmMethod.translatedMethodTagline
+import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MethodSelectionScreen(
     cropId: String,
     cropName: String,
+    district : String,
+    season : String,
     navController: NavHostController,
     appViewModel: AppViewModel = hiltViewModel(),
     geminiViewModel: GeminiViewModel = hiltViewModel()
@@ -47,14 +56,15 @@ fun MethodSelectionScreen(
 
     var selectedMethod by remember { mutableStateOf(FarmMethod.MIXED) }
     var farmSize       by remember { mutableStateOf("") }
+    val currentLangCode = LocalConfiguration.current.locales[0].language
 
-    LaunchedEffect(Unit) { appViewModel.getCropMethod(cropId) }
+    LaunchedEffect(Unit) { appViewModel.getCropMethod(cropId, currentLangCode) }
 
     val size = farmSize.toDoubleOrNull()
 
     val cacheKey =
         if (size != null)
-            "${selectedMethod.label.uppercase()}_$size"
+            "${selectedMethod.label.uppercase()}_${size}_$currentLangCode"
         else
             ""
 
@@ -72,7 +82,7 @@ fun MethodSelectionScreen(
         containerColor = OffWhite,
         topBar = {
             FarmTopBar(
-                title = "$cropName farming",
+                title = "${translatedCropName(cropName)} ${stringResource(R.string.farming_title_suffix)}",
                 showBack = true,
                 onBack = { navController.popBackStack() }
             )
@@ -127,31 +137,26 @@ fun MethodSelectionScreen(
                                     ) { Text("🌾", fontSize = 26.sp) }
                                     Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                                         Text(
-                                            "Choose farming method",
+                                            stringResource(R.string.choose_farming_method),
                                             fontSize = 16.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = WhitePure
                                         )
                                         Text(
-                                            "Compare cost, yield & environmental impact",
+                                            stringResource(R.string.compare_cost_yield),
                                             fontSize = 11.sp,
                                             color = WhitePure.copy(alpha = 0.78f)
                                         )
                                         Spacer(Modifier.height(6.dp))
                                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                            listOf("Organic", "Inorganic", "Mixed").forEach { m ->
+                                            FarmMethod.entries.forEach { fm ->
                                                 Box(
                                                     modifier = Modifier
                                                         .clip(RoundedCornerShape(6.dp))
                                                         .background(WhitePure.copy(alpha = 0.15f))
                                                         .padding(horizontal = 7.dp, vertical = 2.dp)
                                                 ) {
-                                                    Text(
-                                                        m,
-                                                        fontSize = 9.sp,
-                                                        color = WhitePure,
-                                                        fontWeight = FontWeight.SemiBold
-                                                    )
+                                                    Text(translatedMethodLabel(fm), fontSize = 9.sp, color = WhitePure, fontWeight = FontWeight.SemiBold)
                                                 }
                                             }
                                         }
@@ -173,7 +178,7 @@ fun MethodSelectionScreen(
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
-                                    "Select your method",
+                                    stringResource(R.string.select_your_method),
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = TextPrimary
@@ -229,13 +234,13 @@ fun MethodSelectionScreen(
                                             Text(fm.emoji, fontSize = 20.sp)
                                         }
                                         Text(
-                                            fm.label,
+                                            translatedMethodLabel(fm),
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = if (isSelected) WhitePure else TextPrimary
                                         )
                                         Text(
-                                            fm.tagline,
+                                            translatedMethodTagline(fm),
                                             fontSize = 9.sp,
                                             color = if (isSelected) WhitePure.copy(alpha = 0.8f)
                                             else TextSecondary,
@@ -279,14 +284,14 @@ fun MethodSelectionScreen(
                             ) {
                                 StyledMetricCard(
                                     icon = Icons.Outlined.CurrencyRupee,
-                                    label = "Estimated cost",
+                                    label = stringResource(R.string.estimated_cost_label),
                                     value = cost,
                                     accentColor = accent,
                                     modifier = Modifier.weight(1f)
                                 )
                                 StyledMetricCard(
                                     icon = Icons.Outlined.Agriculture,
-                                    label = "Expected yield",
+                                    label = stringResource(R.string.expected_yield_label2),
                                     value = yieldVal,
                                     accentColor = accent,
                                     modifier = Modifier.weight(1f)
@@ -319,13 +324,13 @@ fun MethodSelectionScreen(
                                     ) { Text("🤖", fontSize = 16.sp) }
                                     Column {
                                         Text(
-                                            "AI cost estimator",
+                                            stringResource(R.string.ai_cost_estimator_title),
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = TextPrimary
                                         )
                                         Text(
-                                            "Get a personalised cost estimate for your farm",
+                                            stringResource(R.string.ai_cost_estimator_subtitle),
                                             fontSize = 10.sp,
                                             color = TextSecondary
                                         )
@@ -347,9 +352,9 @@ fun MethodSelectionScreen(
 
                                     modifier = Modifier.fillMaxWidth(),
 
-                                    label = { Text("Farm size (Acres)") },
+                                    label = { Text(stringResource(R.string.farm_size_label)) },
 
-                                    placeholder = { Text("e.g. 2.5", color = TextSecondary.copy(alpha = 0.5f)) },
+                                    placeholder = { Text(stringResource(R.string.farm_size_placeholder), color = TextSecondary.copy(alpha = 0.5f)) },
 
                                     leadingIcon = {
                                         Icon(
@@ -376,25 +381,18 @@ fun MethodSelectionScreen(
                                 Button(
 
                                     onClick = {
-
                                         if (farmSize.isNotBlank()) {
+                                            android.util.Log.d("LANG_DEBUG", "Sending estimateCost with languageCode = $currentLangCode")
 
                                             geminiViewModel.estimateCost(
-
                                                 EstimateCostRequest(
-
                                                     cropName = cropName,
-
                                                     farmingMethod = selectedMethod.label,
-
-                                                    farmSize = farmSize.toDouble()
-
+                                                    farmSize = farmSize.toDouble(),
+                                                    languageCode = currentLangCode
                                                 )
-
                                             )
-
                                         }
-
                                     },
 
                                     modifier = Modifier.fillMaxWidth().height(48.dp),
@@ -415,9 +413,9 @@ fun MethodSelectionScreen(
                                             modifier = Modifier.size(18.dp)
                                         )
                                         Spacer(Modifier.width(8.dp))
-                                        Text("Estimating…", fontWeight = FontWeight.SemiBold)
+                                        Text(stringResource(R.string.estimating_label), fontWeight = FontWeight.SemiBold)
                                     } else {
-                                        Text("🤖  Estimate with AI", fontWeight = FontWeight.Bold)
+                                        Text(stringResource(R.string.estimate_with_ai_btn), fontWeight = FontWeight.Bold)
                                     }
                                 }
 
@@ -452,7 +450,7 @@ fun MethodSelectionScreen(
 
                                     Text(
 
-                                        "⚠ Please enter your farm size first.",
+                                        stringResource(R.string.enter_farm_size_warning),
 
                                         color = Color(0xFFFF9800),
 
@@ -465,7 +463,7 @@ fun MethodSelectionScreen(
 
                                     Text(
 
-                                        "🤖 Please estimate the farming cost before continuing.",
+                                        stringResource(R.string.estimate_before_continue),
 
                                         color = GreenPrimary,
 
@@ -497,9 +495,9 @@ fun MethodSelectionScreen(
 
                                                 icon = Icons.Outlined.DateRange,
 
-                                                label = "Estimated duration",
+                                                label = stringResource(R.string.estimated_duration_label),
 
-                                                value = "${result.estimatedDuration} days",
+                                                value = "${localizedDigits(result.estimatedDuration)} ${stringResource(R.string.unit_days)}",
 
                                                 accentColor = accent,
 
@@ -510,7 +508,7 @@ fun MethodSelectionScreen(
 
                                                 icon = Icons.Outlined.Person,
 
-                                                label = "Labour required",
+                                                label = stringResource(R.string.labour_required_label),
 
                                                 value = result.labourRequired,
 
@@ -544,7 +542,7 @@ fun MethodSelectionScreen(
                                                     contentAlignment = Alignment.Center
                                                 ) { Text("📦", fontSize = 15.sp) }
                                                 Text(
-                                                    "Required materials",
+                                                    stringResource(R.string.required_materials_title),
                                                     fontSize = 14.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     color = TextPrimary
@@ -616,7 +614,7 @@ fun MethodSelectionScreen(
                                             ) {
                                                 Text("🤖", fontSize = 16.sp)
                                                 Text(
-                                                    "AI recommendation",
+                                                    stringResource(R.string.ai_recommendation_title),
                                                     fontSize = 14.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     color = TextPrimary
@@ -645,7 +643,7 @@ fun MethodSelectionScreen(
                                 FarmMethod.MIXED     -> method.mixedAdvantages
                             }
                             StyledProConCard(
-                                title = "Advantages",
+                                title = stringResource(R.string.advantages_title),
                                 items = advantages,
                                 isAdvantage = true,
                                 accentColor = accent
@@ -660,7 +658,7 @@ fun MethodSelectionScreen(
                                 FarmMethod.MIXED     -> method.mixedDisadvantages
                             }
                             StyledProConCard(
-                                title = "Disadvantages",
+                                title = stringResource(R.string.disadvantages_title),
                                 items = disadvantages,
                                 isAdvantage = false,
                                 accentColor = accent
@@ -698,7 +696,10 @@ fun MethodSelectionScreen(
 
                                             labourRequired = aiResult.labourRequired,
 
-                                            notes = aiResult.notes
+                                            notes = aiResult.notes,
+
+                                            district = district,
+                                            season=season
 
                                         )
 

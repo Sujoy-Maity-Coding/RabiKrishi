@@ -1,5 +1,6 @@
 package com.sujoy.smartfarm.Data.Repo
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
@@ -7,6 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import com.sujoy.smartfarm.Common.ResultState
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.Domain.model.CompletedTask
 import com.sujoy.smartfarm.Domain.model.Crop
 import com.sujoy.smartfarm.Domain.model.CropMethod.CropMethod
@@ -15,11 +17,14 @@ import com.sujoy.smartfarm.Domain.model.DailyFarmUpdate
 import com.sujoy.smartfarm.Domain.model.Expense.Expense
 import com.sujoy.smartfarm.Domain.model.Farm
 import com.sujoy.smartfarm.Domain.model.FarmerData
+import com.sujoy.smartfarm.Domain.model.Phase
 import com.sujoy.smartfarm.Domain.model.TaskItem
 import com.sujoy.smartfarm.Domain.repo.Repo
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class RepoImpl @Inject constructor(
@@ -27,7 +32,8 @@ class RepoImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
 
     private val firebaseFirestore: FirebaseFirestore,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    @ApplicationContext private val context: Context
 
 ) : Repo {
 
@@ -74,7 +80,7 @@ class RepoImpl @Inject constructor(
                         trySend(
 
                             ResultState.Success(
-                                "Account Created Successfully"
+                                context.getString(R.string.repo_msg_account_created)
                             )
                         )
                     }
@@ -128,7 +134,7 @@ class RepoImpl @Inject constructor(
                 trySend(
 
                     ResultState.Success(
-                        "Login Successful"
+                        context.getString(R.string.repo_msg_login_successful)
                     )
                 )
             }
@@ -141,6 +147,71 @@ class RepoImpl @Inject constructor(
                         it.message.toString()
                     )
                 )
+            }
+
+        awaitClose { close() }
+    }
+
+    override fun getFarmerProfile(): Flow<ResultState<FarmerData>> = callbackFlow {
+
+        trySend(ResultState.Loading)
+
+        val uid = firebaseAuth.currentUser?.uid
+
+        if (uid == null) {
+            trySend(ResultState.Error(context.getString(R.string.repo_err_user_not_logged_in)))
+            close()
+            return@callbackFlow
+        }
+
+        firebaseFirestore
+            .collection("Farmers")
+            .document(uid)
+            .get()
+            .addOnSuccessListener { document ->
+                val farmer = document.toObject(FarmerData::class.java)
+                if (farmer != null) {
+                    trySend(ResultState.Success(farmer))
+                } else {
+                    trySend(ResultState.Error(context.getString(R.string.repo_err_profile_not_found)))
+                }
+            }
+            .addOnFailureListener {
+                trySend(ResultState.Error(it.message.toString()))
+            }
+
+        awaitClose { close() }
+    }
+
+    override fun updateFarmerProfile(
+        name: String,
+        phoneNumber: String
+    ): Flow<ResultState<String>> = callbackFlow {
+
+        trySend(ResultState.Loading)
+
+        val uid = firebaseAuth.currentUser?.uid
+
+        if (uid == null) {
+            trySend(ResultState.Error(context.getString(R.string.repo_err_user_not_logged_in)))
+            close()
+            return@callbackFlow
+        }
+
+        firebaseFirestore
+            .collection("Farmers")
+            .document(uid)
+            .update(
+                mapOf(
+                    "name" to name,
+                    "phoneNumber" to phoneNumber
+                )
+            )
+            .addOnSuccessListener {
+                trySend(ResultState.Success(context.getString(R.string.repo_msg_profile_updated)))
+            }
+            .addOnFailureListener {
+                trySend(ResultState.Error(it.message.toString()))
             }
 
         awaitClose { close() }
@@ -260,7 +331,7 @@ class RepoImpl @Inject constructor(
 
                         trySend(
                             ResultState.Error(
-                                "No suitable crops found for selected conditions."
+                                context.getString(R.string.repo_err_no_suitable_crops)
                             )
                         )
 
@@ -287,60 +358,65 @@ class RepoImpl @Inject constructor(
         }
 
     override fun getCropMethod(
-
-        cropId: String
-
+        cropId: String, languageCode: String
     ): Flow<ResultState<CropMethod>> = callbackFlow {
 
         trySend(ResultState.Loading)
 
+        val langCode = languageCode
+
         firebaseFirestore
-
             .collection("crop_methods")
-
             .document(cropId)
-
             .get()
-
             .addOnSuccessListener { document ->
 
-                val cropMethod =
-
-                    document.toObject(
-                        CropMethod::class.java
-                    )
-
-                if(cropMethod != null){
-
-                    trySend(
-
-                        ResultState.Success(
-                            cropMethod
-                        )
-                    )
-
+                val cropMethod: CropMethod? = if (langCode == "en") {
+                    document.toObject(CropMethod::class.java)
                 } else {
+                    @Suppress("UNCHECKED_CAST")
+                    val langMap = document.get(langCode) as? Map<String, Any>
+                    if (langMap != null) {
+                        mapToCropMethod(cropId, langMap)
+                    } else {
+                        // Fallback: translation missing for this crop, show English
+                        document.toObject(CropMethod::class.java)
+                    }
+                }
 
-                    trySend(
-
-                        ResultState.Error(
-                            "Method not found"
-                        )
-                    )
+                if (cropMethod != null) {
+                    trySend(ResultState.Success(cropMethod))
+                } else {
+                    trySend(ResultState.Error(context.getString(R.string.repo_err_method_not_found)))
                 }
             }
-
             .addOnFailureListener {
-
-                trySend(
-
-                    ResultState.Error(
-                        it.message.toString()
-                    )
-                )
+                trySend(ResultState.Error(it.message.toString()))
             }
 
         awaitClose { close() }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun mapToCropMethod(cropId: String, map: Map<String, Any>): CropMethod {
+        fun list(key: String) = (map[key] as? List<String>) ?: emptyList()
+        fun str(key: String) = (map[key] as? String) ?: ""
+
+        return CropMethod(
+            cropId = cropId,
+            organicCost = str("organicCost"),
+            organicYield = str("organicYield"),
+            organicAdvantages = list("organicAdvantages"),
+            organicDisadvantages = list("organicDisadvantages"),
+            inorganicCost = str("inorganicCost"),
+            inorganicYield = str("inorganicYield"),
+            inorganicAdvantages = list("inorganicAdvantages"),
+            inorganicDisadvantages = list("inorganicDisadvantages"),
+            mixedCost = str("mixedCost"),
+            mixedYield = str("mixedYield"),
+            mixedAdvantages = list("mixedAdvantages"),
+            mixedDisadvantages = list("mixedDisadvantages")
+        )
     }
 
     override fun createFarm(
@@ -352,65 +428,34 @@ class RepoImpl @Inject constructor(
 
             trySend(ResultState.Loading)
 
-            val uid =
-                firebaseAuth.currentUser?.uid
+            val uid = firebaseAuth.currentUser?.uid
 
-            if(uid == null){
-
-                trySend(
-                    ResultState.Error(
-                        "User not logged in"
-                    )
-                )
-
+            if (uid == null) {
+                trySend(ResultState.Error(context.getString(R.string.repo_err_user_not_logged_in)))
                 close()
-
                 return@callbackFlow
             }
 
-            val farmId =
+            // Use the farmId already set on the farm (generated upfront by the
+            // ViewModel so the schedule can be saved under the same ID before
+            // this farm doc even exists). Only generate a new one as a fallback.
+            val farmId = farm.farmId.ifBlank {
+                firebaseFirestore.collection("temp").document().id
+            }
 
-                firebaseFirestore
-                    .collection("temp")
-                    .document()
-                    .id
-
-            val updatedFarm =
-
-                farm.copy(
-                    farmId = farmId
-                )
+            val updatedFarm = farm.copy(farmId = farmId)
 
             firebaseFirestore
-
                 .collection("Farmers")
-
                 .document(uid)
-
                 .collection("farms")
-
                 .document(farmId)
-
                 .set(updatedFarm)
-
                 .addOnSuccessListener {
-
-                    trySend(
-
-                        ResultState.Success(
-                            "Farm Created"
-                        )
-                    )
+                    trySend(ResultState.Success(context.getString(R.string.repo_msg_farm_created)))
                 }
-
                 .addOnFailureListener {
-
-                    trySend(
-
-                        ResultState.Error(
-                            it.message.toString()
-                        )
-                    )
+                    trySend(ResultState.Error(it.message.toString()))
                 }
 
             awaitClose { close() }
@@ -428,7 +473,7 @@ class RepoImpl @Inject constructor(
 
                 trySend(
                     ResultState.Error(
-                        "User not logged in"
+                        context.getString(R.string.repo_err_user_not_logged_in)
                     )
                 )
 
@@ -502,7 +547,7 @@ class RepoImpl @Inject constructor(
 
                 trySend(
                     ResultState.Error(
-                        "User not logged in"
+                        context.getString(R.string.repo_err_user_not_logged_in)
                     )
                 )
 
@@ -543,7 +588,7 @@ class RepoImpl @Inject constructor(
 
                         trySend(
                             ResultState.Error(
-                                "Farm not found"
+                                context.getString(R.string.repo_err_farm_not_found)
                             )
                         )
                     }
@@ -561,66 +606,80 @@ class RepoImpl @Inject constructor(
             awaitClose { close() }
         }
     override fun getCropSchedule(
+        cropId: String, languageCode: String
+    ): Flow<ResultState<CropSchedule>> = callbackFlow {
 
-        cropId: String
+        trySend(ResultState.Loading)
 
-    ): Flow<ResultState<CropSchedule>> =
-        callbackFlow {
+        val langCode = languageCode
 
-            trySend(ResultState.Loading)
+        firebaseFirestore
+            .collection("crop_schedules")
+            .document(cropId)
+            .get()
+            .addOnSuccessListener { document ->
 
-            firebaseFirestore
-
-                .collection("crop_schedules")
-
-                .document(cropId)
-
-                .get()
-
-                .addOnSuccessListener { document ->
-
-                    val schedule =
-
-                        document.toObject(
-                            CropSchedule::class.java
-                        )
-
-                    if(schedule != null){
-                        Log.d(
-                            "SCHEDULE",
-                            schedule.toString()
-                        )
-
-                        trySend(
-
-                            ResultState.Success(
-                                schedule
-                            )
-                        )
-
+                val cropSchedule: CropSchedule? = if (langCode == "en") {
+                    document.toObject(CropSchedule::class.java)
+                } else {
+                    @Suppress("UNCHECKED_CAST")
+                    val langMap = document.get(langCode) as? Map<String, Any>
+                    if (langMap != null) {
+                        mapToCropSchedule(cropId, langMap)
                     } else {
-
-                        trySend(
-
-                            ResultState.Error(
-                                "Schedule not found"
-                            )
-                        )
+                        // Fallback: translation missing for this crop, show English
+                        document.toObject(CropSchedule::class.java)
                     }
                 }
 
-                .addOnFailureListener {
-
-                    trySend(
-
-                        ResultState.Error(
-                            it.message.toString()
-                        )
-                    )
+                if (cropSchedule != null) {
+                    Log.d("SCHEDULE", cropSchedule.toString())
+                    trySend(ResultState.Success(cropSchedule))
+                } else {
+                    trySend(ResultState.Error(context.getString(R.string.repo_err_schedule_not_found)))
                 }
+            }
+            .addOnFailureListener {
+                trySend(ResultState.Error(it.message.toString()))
+            }
 
-            awaitClose { close() }
+        awaitClose { close() }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun mapToCropSchedule(cropId: String, map: Map<String, Any>): CropSchedule {
+        fun str(key: String, m: Map<String, Any>) = (m[key] as? String) ?: ""
+        fun int(key: String, m: Map<String, Any>) =
+            (m[key] as? Long)?.toInt() ?: (m[key] as? Number)?.toInt() ?: 0
+
+        val phasesRaw = (map["phases"] as? List<Map<String, Any>>) ?: emptyList()
+
+        val phases = phasesRaw.map { phaseMap ->
+            val tasksRaw = (phaseMap["tasks"] as? List<Map<String, Any>>) ?: emptyList()
+
+            val tasks = tasksRaw.map { taskMap ->
+                TaskItem(
+                    taskId = str("taskId", taskMap),
+                    day = int("day", taskMap),
+                    title = str("title", taskMap),
+                    description = str("description", taskMap)
+                )
+            }
+
+            Phase(
+                phaseId = str("phaseId", phaseMap),
+                title = str("title", phaseMap),
+                startDay = int("startDay", phaseMap),
+                endDay = int("endDay", phaseMap),
+                tasks = tasks
+            )
         }
+
+        return CropSchedule(
+            cropId = cropId,
+            phases = phases
+        )
+    }
 
     override fun updateTaskStatus(
 
@@ -638,7 +697,7 @@ class RepoImpl @Inject constructor(
 
         if (uid == null) {
 
-            trySend(ResultState.Error("User not logged in"))
+            trySend(ResultState.Error(context.getString(R.string.repo_err_user_not_logged_in)))
 
             close()
 
@@ -687,7 +746,7 @@ class RepoImpl @Inject constructor(
 
                             trySend(
 
-                                ResultState.Success("Updated")
+                                ResultState.Success(context.getString(R.string.repo_msg_updated))
 
                             )
 
@@ -699,7 +758,7 @@ class RepoImpl @Inject constructor(
 
                                 ResultState.Error(
 
-                                    it.message ?: "Failed"
+                                    it.message ?: context.getString(R.string.repo_err_failed)
 
                                 )
 
@@ -715,7 +774,7 @@ class RepoImpl @Inject constructor(
 
                         ResultState.Error(
 
-                            it.message ?: "Failed"
+                            it.message ?: context.getString(R.string.repo_err_failed)
 
                         )
 
@@ -731,7 +790,7 @@ class RepoImpl @Inject constructor(
 
                     trySend(
 
-                        ResultState.Success("Removed")
+                        ResultState.Success(context.getString(R.string.repo_msg_removed))
 
                     )
 
@@ -743,7 +802,7 @@ class RepoImpl @Inject constructor(
 
                         ResultState.Error(
 
-                            it.message ?: "Error"
+                            it.message ?: context.getString(R.string.repo_err_generic)
 
                         )
 
@@ -777,7 +836,7 @@ class RepoImpl @Inject constructor(
 
                 trySend(
                     ResultState.Error(
-                        "User not logged in"
+                        context.getString(R.string.repo_err_user_not_logged_in)
                     )
                 )
 
@@ -871,7 +930,7 @@ class RepoImpl @Inject constructor(
 
                 trySend(
                     ResultState.Error(
-                        "User not logged in"
+                        context.getString(R.string.repo_err_user_not_logged_in)
                     )
                 )
 
@@ -959,7 +1018,7 @@ class RepoImpl @Inject constructor(
                                         trySend(
 
                                             ResultState.Success(
-                                                "Saved Successfully"
+                                                context.getString(R.string.repo_msg_saved_successfully)
                                             )
 
                                         )
@@ -972,7 +1031,7 @@ class RepoImpl @Inject constructor(
 
                                             ResultState.Error(
 
-                                                it.message ?: "Failed to update latest AI status"
+                                                it.message ?: context.getString(R.string.repo_err_failed_update_ai_status)
 
                                             )
 
@@ -1027,7 +1086,7 @@ class RepoImpl @Inject constructor(
                                 trySend(
 
                                     ResultState.Success(
-                                        "Saved Successfully"
+                                        context.getString(R.string.repo_msg_saved_successfully)
                                     )
 
                                 )
@@ -1040,7 +1099,7 @@ class RepoImpl @Inject constructor(
 
                                     ResultState.Error(
 
-                                        it.message ?: "Failed to update latest AI status"
+                                        it.message ?: context.getString(R.string.repo_err_failed_update_ai_status)
 
                                     )
 
@@ -1080,7 +1139,7 @@ class RepoImpl @Inject constructor(
             if (uid == null) {
 
                 trySend(
-                    ResultState.Error("User not logged in")
+                    ResultState.Error(context.getString(R.string.repo_err_user_not_logged_in))
                 )
 
                 close()
@@ -1149,7 +1208,7 @@ class RepoImpl @Inject constructor(
         if (uid == null) {
 
             trySend(
-                ResultState.Error("User not logged in")
+                ResultState.Error(context.getString(R.string.repo_err_user_not_logged_in))
             )
 
             close()
@@ -1177,7 +1236,7 @@ class RepoImpl @Inject constructor(
 
                     trySend(
                         ResultState.Error(
-                            error.message ?: "Unknown error"
+                            error.message ?: context.getString(R.string.repo_err_unknown)
                         )
                     )
 
@@ -1199,14 +1258,14 @@ class RepoImpl @Inject constructor(
                     } else {
 
                         trySend(
-                            ResultState.Error("No data found")
+                            ResultState.Error(context.getString(R.string.repo_err_no_data_found))
                         )
                     }
 
                 } else {
 
                     trySend(
-                        ResultState.Error("Update not found")
+                        ResultState.Error(context.getString(R.string.repo_err_update_not_found))
                     )
                 }
             }
@@ -1229,7 +1288,7 @@ class RepoImpl @Inject constructor(
 
         if (uid == null) {
 
-            trySend(ResultState.Error("User not logged in"))
+            trySend(ResultState.Error(context.getString(R.string.repo_err_user_not_logged_in)))
 
             close()
 
@@ -1261,7 +1320,7 @@ class RepoImpl @Inject constructor(
 
                             ResultState.Error(
 
-                                error.message ?: "Unknown Error"
+                                error.message ?: context.getString(R.string.repo_err_unknown)
 
                             )
 
@@ -1301,7 +1360,7 @@ class RepoImpl @Inject constructor(
 
                                 ResultState.Error(
 
-                                    "Failed to parse AI status"
+                                    context.getString(R.string.repo_err_failed_parse_ai_status)
 
                                 )
 
@@ -1315,7 +1374,7 @@ class RepoImpl @Inject constructor(
 
                             ResultState.Error(
 
-                                "No AI analysis found"
+                                context.getString(R.string.repo_err_no_ai_analysis_found)
 
                             )
 
@@ -1349,7 +1408,7 @@ class RepoImpl @Inject constructor(
             if (uid == null) {
 
                 trySend(
-                    ResultState.Error("User not logged in")
+                    ResultState.Error(context.getString(R.string.repo_err_user_not_logged_in))
                 )
 
                 close()
@@ -1398,7 +1457,7 @@ class RepoImpl @Inject constructor(
 
                         ResultState.Success(
 
-                            "Expense Added"
+                            context.getString(R.string.repo_msg_expense_added)
 
                         )
 
@@ -1412,7 +1471,7 @@ class RepoImpl @Inject constructor(
 
                         ResultState.Error(
 
-                            it.message ?: "Failed"
+                            it.message ?: context.getString(R.string.repo_err_failed)
 
                         )
 
@@ -1445,7 +1504,7 @@ class RepoImpl @Inject constructor(
 
                     ResultState.Error(
 
-                        "User not logged in"
+                        context.getString(R.string.repo_err_user_not_logged_in)
 
                     )
 
@@ -1527,4 +1586,234 @@ class RepoImpl @Inject constructor(
             }
 
         }
+
+    override suspend fun getMyFarmsOnce(): List<Farm> {
+
+        val uid = firebaseAuth.currentUser?.uid
+        Log.d("TodayTaskWorker", "getMyFarmsOnce: uid=$uid")
+
+        if (uid == null) {
+            Log.d("TodayTaskWorker", "getMyFarmsOnce: no user logged in, returning empty")
+            return emptyList()
+        }
+
+        return try {
+            val snapshot = firebaseFirestore
+                .collection("Farmers")
+                .document(uid)
+                .collection("farms")
+                .get()
+                .await()
+
+            Log.d("TodayTaskWorker", "getMyFarmsOnce: raw doc count = ${snapshot.documents.size}")
+
+            snapshot.documents.mapNotNull {
+                val farm = it.toObject(Farm::class.java)
+                if (farm == null) {
+                    Log.w("TodayTaskWorker", "getMyFarmsOnce: failed to map doc ${it.id} -> data=${it.data}")
+                }
+                farm
+            }
+
+        } catch (e: Exception) {
+            Log.e("TodayTaskWorker", "getMyFarmsOnce: exception", e)
+            emptyList()
+        }
+    }
+
+    override suspend fun getCropScheduleOnce(
+        cropId: String
+    ): CropSchedule? {
+
+        return try {
+
+            firebaseFirestore
+                .collection("crop_schedules")
+                .document(cropId)
+                .get()
+                .await()
+                .toObject(CropSchedule::class.java)
+
+        } catch (e: Exception) {
+
+            null
+
+        }
+
+    }
+    override suspend fun getFarmSchedule(
+        farmId: String
+    ): CropSchedule? {
+
+        val uid = firebaseAuth.currentUser?.uid ?: return null
+
+        return try {
+
+            firebaseFirestore
+                .collection("Farmers")
+                .document(uid)
+                .collection("farms")
+                .document(farmId)
+                .collection("schedule")
+                .document("current")
+                .get()
+                .await()
+                .toObject(CropSchedule::class.java)
+
+        } catch (e: Exception) {
+
+            Log.e("FarmSchedule", "getFarmSchedule failed for $farmId", e)
+            null
+
+        }
+
+    }
+
+    override suspend fun saveFarmSchedule(
+        farmId: String,
+        schedule: CropSchedule
+    ): Boolean {
+
+        val uid = firebaseAuth.currentUser?.uid ?: return false
+
+        return try {
+
+            firebaseFirestore
+                .collection("Farmers")
+                .document(uid)
+                .collection("farms")
+                .document(farmId)
+                .collection("schedule")
+                .document("current")
+                .set(schedule)
+                .await()
+
+            true
+
+        } catch (e: Exception) {
+
+            Log.e("FarmSchedule", "saveFarmSchedule failed for $farmId", e)
+            false
+
+        }
+
+    }
+
+    override suspend fun appendPhaseToFarmSchedule(
+        farmId: String,
+        newPhase: Phase
+    ): Boolean {
+
+        val uid = firebaseAuth.currentUser?.uid ?: return false
+
+        val docRef = firebaseFirestore
+            .collection("Farmers")
+            .document(uid)
+            .collection("farms")
+            .document(farmId)
+            .collection("schedule")
+            .document("current")
+
+        return try {
+
+            firebaseFirestore.runTransaction { transaction ->
+
+                val snapshot = transaction.get(docRef)
+
+                val existing = snapshot.toObject(CropSchedule::class.java)
+
+                if (existing == null) {
+
+                    // No doc yet — shouldn't normally happen since farm creation
+                    // always saves phase 1 first, but handle gracefully anyway.
+                    transaction.set(
+                        docRef,
+                        CropSchedule(
+                            cropId = "",
+                            phases = listOf(newPhase)
+                        )
+                    )
+
+                } else {
+
+                    // Guard against double-tap: if this phase (by phaseId) is
+                    // already present, don't add it again.
+                    val alreadyHasPhase = existing.phases.any {
+                        it.phaseId == newPhase.phaseId
+                    }
+
+                    if (!alreadyHasPhase) {
+
+                        val updated = existing.copy(
+                            phases = existing.phases + newPhase
+                        )
+
+                        transaction.set(docRef, updated)
+
+                    }
+
+                }
+
+                null
+
+            }.await()
+
+            true
+
+        } catch (e: Exception) {
+
+            Log.e("FarmSchedule", "appendPhaseToFarmSchedule failed for $farmId", e)
+            false
+
+        }
+
+    }
+
+    override fun getFarmScheduleFlow(
+        farmId: String
+    ): Flow<ResultState<CropSchedule>> = callbackFlow {
+
+        trySend(ResultState.Loading)
+
+        val uid = firebaseAuth.currentUser?.uid
+
+        if (uid == null) {
+
+            trySend(ResultState.Error(context.getString(R.string.repo_err_user_not_logged_in)))
+            close()
+            return@callbackFlow
+
+        }
+
+        firebaseFirestore
+            .collection("Farmers")
+            .document(uid)
+            .collection("farms")
+            .document(farmId)
+            .collection("schedule")
+            .document("current")
+            .get()
+            .addOnSuccessListener { doc ->
+
+                val schedule = doc.toObject(CropSchedule::class.java)
+
+                if (schedule != null) {
+                    trySend(ResultState.Success(schedule))
+                } else {
+                    trySend(ResultState.Error(context.getString(R.string.repo_err_schedule_not_found)))
+                }
+
+            }
+            .addOnFailureListener {
+                trySend(ResultState.Error(it.message.toString()))
+            }
+
+        awaitClose { close() }
+
+    }
+
+    // RepoImpl.kt
+    override fun generateFarmId(): String {
+        return firebaseFirestore.collection("temp").document().id
+    }
 }

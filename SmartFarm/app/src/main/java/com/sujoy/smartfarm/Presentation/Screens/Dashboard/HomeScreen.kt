@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -44,6 +45,7 @@ import com.sujoy.smartfarm.Presentation.Components.Dashboard.FeatureCard
 import com.sujoy.smartfarm.Presentation.Components.Dashboard.StatChip
 import com.sujoy.smartfarm.Presentation.Navigation.FarmerRoutes
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
 import com.sujoy.smartfarm.ui.theme.OffWhite
 import com.sujoy.smartfarm.ui.theme.TextSecondary
@@ -58,7 +60,7 @@ fun HomeScreen(
     Scaffold(
         containerColor = OffWhite,
         topBar = {
-            FarmTopBar(title = "Rabi Krishi")
+            FarmTopBar(title = stringResource(R.string.app_title_dashboard))
         }
     ) { padding ->
 
@@ -81,10 +83,10 @@ fun HomeScreen(
                         .padding(24.dp)
                 ) {
                     Column {
-                        Text(text = "Good day, Farmer 👋", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = WhitePure)
+                        Text(text = stringResource(R.string.home_greeting), fontSize = 22.sp, fontWeight = FontWeight.Bold, color = WhitePure)
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            text = "What would you like to do today?",
+                            text = stringResource(R.string.home_subtitle),
                             style = MaterialTheme.typography.bodyMedium,
                             color = WhitePure.copy(alpha = 0.8f)
                         )
@@ -98,16 +100,16 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    StatChip(emoji = "📍", label = "6 Districts", modifier = Modifier.weight(1f))
-                    StatChip(emoji = "🌿", label = "3 Seasons", modifier = Modifier.weight(1f))
-                    StatChip(emoji = "🪨", label = "4 Soil types", modifier = Modifier.weight(1f))
+                    StatChip(emoji = "📍", label = stringResource(R.string.stat_districts), modifier = Modifier.weight(1f))
+                    StatChip(emoji = "🌿", label = stringResource(R.string.stat_seasons), modifier = Modifier.weight(1f))
+                    StatChip(emoji = "🪨", label = stringResource(R.string.stat_soil_types), modifier = Modifier.weight(1f))
                 }
             }
 
             // Section label
             item {
                 Text(
-                    text = "Features",
+                    text = stringResource(R.string.section_features),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = TextSecondary
@@ -117,18 +119,18 @@ fun HomeScreen(
             // Feature cards
             item {
                 FeatureCard(
-                    title = "Crop recommendation",
+                    title = stringResource(R.string.feature_crop_title),
                     emoji = "🌾",
-                    subtitle = "Find the best crop for your farm",
+                    subtitle = stringResource(R.string.feature_crop_subtitle),
                     onClick = { navController.navigate(FarmerRoutes.CropRecommendationScreen) }
                 )
             }
 
             item {
                 FeatureCard(
-                    title = "My Farms",
+                    title = stringResource(R.string.feature_farms_title),
                     emoji = "🚜",
-                    subtitle = "Manage and track your farms",
+                    subtitle = stringResource(R.string.feature_farms_subtitle),
                     onClick = {
                         navController.navigate(
                             FarmerRoutes.MyFarmsScreen
@@ -139,9 +141,9 @@ fun HomeScreen(
 
             item {
                 FeatureCard(
-                    title = "My profile",
+                    title = stringResource(R.string.feature_profile_title),
                     emoji = "👤",
-                    subtitle = "View and edit your account",
+                    subtitle = stringResource(R.string.feature_profile_subtitle),
                     onClick = { navController.navigate(FarmerRoutes.ProfileScreen) }
                 )
             }

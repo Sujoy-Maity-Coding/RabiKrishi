@@ -8,6 +8,6 @@ class GetCropMethodUseCase @Inject constructor(
 ) {
 
     operator fun invoke(
-        cropId: String
-    ) = repo.getCropMethod(cropId)
+        cropId: String, languageCode: String
+    ) = repo.getCropMethod(cropId, languageCode)
 }

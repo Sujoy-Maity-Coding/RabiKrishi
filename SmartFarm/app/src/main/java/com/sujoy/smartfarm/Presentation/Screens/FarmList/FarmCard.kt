@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,7 +52,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.sujoy.smartfarm.Domain.model.Farm
 import com.sujoy.smartfarm.Presentation.Navigation.FarmerRoutes
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedCropName
+import com.sujoy.smartfarm.Presentation.Utils.FarmMethod.translatedLandArea
+import com.sujoy.smartfarm.Presentation.Utils.FarmMethod.translatedMethodLabelFromString
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.GreenContainer
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
 import com.sujoy.smartfarm.ui.theme.OffWhite
@@ -135,7 +140,7 @@ fun FarmCard(
                     }
                     Column {
                         Text(
-                            farm.cropName,
+                            translatedCropName(farm.cropName),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
@@ -156,7 +161,7 @@ fun FarmCard(
                         .padding(horizontal = 10.dp, vertical = 5.dp)
                 ) {
                     Text(
-                        "${methodEmoji(farm.farmingMethod)} ${farm.farmingMethod}",
+                        "${methodEmoji(farm.farmingMethod)} ${translatedMethodLabelFromString(farm.farmingMethod)}",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = accent
@@ -175,13 +180,13 @@ fun FarmCard(
             ) {
                 FarmInfoChip(
                     icon = Icons.Outlined.SquareFoot,
-                    label = "Area",
-                    value = farm.landArea,
+                    label = stringResource(R.string.area_label),
+                    value = translatedLandArea(farm.landArea),
                     modifier = Modifier.weight(1f)
                 )
                 FarmInfoChip(
                     icon = Icons.Outlined.CalendarToday,
-                    label = "Started",
+                    label = stringResource(R.string.started_label),
                     value = farm.startDate.toDateString(),
                     modifier = Modifier.weight(1f)
                 )
@@ -203,7 +208,7 @@ fun FarmCard(
                         )
                 )
                 Text(
-                    text = if (farm.isCompleted) "Completed" else "Active",
+                    text = if (farm.isCompleted) stringResource(R.string.status_completed) else stringResource(R.string.status_active),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = if (farm.isCompleted) TextSecondary else Color(0xFF2E7D32)
@@ -229,7 +234,7 @@ fun FarmCard(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    "Open farm",
+                    stringResource(R.string.open_farm_btn),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold
                 )

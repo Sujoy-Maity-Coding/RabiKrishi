@@ -34,5 +34,7 @@ data class Crop(
 
     var marketDemand: String = "",
 
-    var farmingTips: String = ""
+    var farmingTips: String = "",
+
+    var growthDuration: String = "",
 )

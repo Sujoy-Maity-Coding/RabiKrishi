@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,7 +38,13 @@ import com.sujoy.smartfarm.Presentation.Components.Crop.LoadingView
 import com.sujoy.smartfarm.Presentation.Components.Crop.ResultHeroBanner
 import com.sujoy.smartfarm.Presentation.Components.Crop.metaFor
 import com.sujoy.smartfarm.Presentation.Components.Dashboard.FarmTopBar
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedDistrictName
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedSeasonName
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedSoilName
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
+import com.sujoy.smartfarm.Presentation.ViewModel.GeminiViewModel
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.OffWhite
 import com.sujoy.smartfarm.ui.theme.TextPrimary
 import com.sujoy.smartfarm.ui.theme.TextSecondary
@@ -50,12 +57,13 @@ fun RecommendationResultScreen(
     season: String,
     soilType: String,
     navController: NavHostController,
-    appViewModel: AppViewModel = hiltViewModel()
+    appViewModel: AppViewModel = hiltViewModel(),
+    geminiViewModel: GeminiViewModel = hiltViewModel()
 ) {
-    val state by appViewModel.recommendationState.collectAsState()
+    val state by geminiViewModel.recommendationState.collectAsState()
 
     LaunchedEffect(Unit) {
-        appViewModel.getRecommendations(
+        geminiViewModel.getRecommendations(
             district = district, month = month, season = season, soilType = soilType
         )
     }
@@ -64,14 +72,16 @@ fun RecommendationResultScreen(
         containerColor = OffWhite,
         topBar = {
             FarmTopBar(
-                title = "Recommended crops",
+                title = stringResource(R.string.recommended_crops_title),
                 showBack = true,
                 onBack = { navController.popBackStack() }
             )
         }
     ) { padding ->
 
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)) {
 
             when {
                 state.isLoading -> LoadingView()
@@ -88,9 +98,9 @@ fun RecommendationResultScreen(
                         // ── Hero summary banner
                         item {
                             ResultHeroBanner(
-                                district = district,
-                                season = season,
-                                soilType = soilType,
+                                district = translatedDistrictName(district),
+                                season = translatedSeasonName(season),
+                                soilType = translatedSoilName(soilType),
                                 count = state.crops.size
                             )
                         }
@@ -103,9 +113,9 @@ fun RecommendationResultScreen(
                                     .padding(horizontal = 20.dp, vertical = 14.dp),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                ContextChip(icon = Icons.Outlined.LocationOn, label = district)
-                                ContextChip(icon = Icons.Outlined.WbSunny,    label = season)
-                                ContextChip(icon = Icons.Outlined.Landscape,  label = soilType)
+                                ContextChip(icon = Icons.Outlined.LocationOn, label = translatedDistrictName(district))
+                                ContextChip(icon = Icons.Outlined.WbSunny,    label = translatedSeasonName(season))
+                                ContextChip(icon = Icons.Outlined.Landscape,  label = translatedSoilName(soilType))
                             }
                         }
 
@@ -119,13 +129,13 @@ fun RecommendationResultScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    "Best matches for you",
+                                    stringResource(R.string.best_matches_label),
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = TextPrimary
                                 )
                                 Text(
-                                    "${state.crops.size} crops",
+                                    localizedDigits(stringResource(R.string.crops_count, state.crops.size)),
                                     fontSize = 12.sp,
                                     color = TextSecondary
                                 )
@@ -135,22 +145,32 @@ fun RecommendationResultScreen(
 
                         // ── Crop cards
                         itemsIndexed(state.crops) { index, crop ->
-                            val baseMeta = metaFor(crop.cropName)
+                            val baseMeta = metaFor(crop)
+
                             val meta = CropMeta(
-                                emoji        = baseMeta.emoji,
-                                category     = baseMeta.category,
-                                matchScore   = crop.recommendationScore,
-                                waterNeed    = baseMeta.waterNeed,
-                                growthDays   = baseMeta.growthDays,
-                                marketDemand = baseMeta.marketDemand,
-                                accentColor  = baseMeta.accentColor
+
+                                emoji = baseMeta.emoji,
+
+                                accentColor = baseMeta.accentColor
+
                             )
+
                             AnimatedCropCard(
+
                                 crop = crop,
+
                                 meta = meta,
+
                                 rank = index + 1,
+
+                                district = district,
+
+                                season = season,
+
                                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp),
-                                navController=navController
+
+                                navController = navController
+
                             )
                         }
                     }

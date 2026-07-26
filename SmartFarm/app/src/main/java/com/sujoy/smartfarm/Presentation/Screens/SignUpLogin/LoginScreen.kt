@@ -68,7 +68,7 @@ fun LoginScreen(
 
     LaunchedEffect(authState.success) {
         if (authState.success == "Login Successful") {
-            navController.navigate(FarmerRoutes.HomeScreen) {
+            navController.navigate(FarmerRoutes.LanguageSelectionScreen) {
                 popUpTo(FarmerRoutes.LoginScreen) { inclusive = true }
             }
         }
@@ -98,7 +98,7 @@ fun LoginScreen(
                     Text(text = "🌾", fontSize = 52.sp)
                     Spacer(Modifier.height(12.dp))
                     Text(
-                        text = "Smart Crop",
+                        text = "Rabi Krishi",
                         fontSize = 26.sp,
                         fontWeight = FontWeight.Bold,
                         color = WhitePure

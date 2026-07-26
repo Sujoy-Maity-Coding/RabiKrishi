@@ -49,6 +49,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -66,7 +68,15 @@ import com.sujoy.smartfarm.Presentation.Navigation.FarmerRoutes
 import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.DistrictItem
 import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.SeasonItem
 import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.SoilItem
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedDistrictHint
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedDistrictName
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedSeasonMonths
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedSeasonName
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedSoilName
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedSoilTrait
 import com.sujoy.smartfarm.Presentation.ViewModel.AppViewModel
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.GreenContainer
 import com.sujoy.smartfarm.ui.theme.GreenOnContainer
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
@@ -90,7 +100,11 @@ fun DistrictPicker(
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(WhitePure)
-            .border(1.dp, if (selected.isNotEmpty()) GreenPrimary else OutlineGreen, RoundedCornerShape(16.dp))
+            .border(
+                1.dp,
+                if (selected.isNotEmpty()) GreenPrimary else OutlineGreen,
+                RoundedCornerShape(16.dp)
+            )
     ) {
         // Trigger row
         Row(
@@ -102,14 +116,14 @@ fun DistrictPicker(
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (selected.isEmpty()) {
-                Text("Select district", color = TextSecondary, fontSize = 14.sp)
+                Text(stringResource(R.string.select_district_placeholder), color = TextSecondary, fontSize = 14.sp)
             } else {
                 val item = items.find { it.name == selected }
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(item?.emoji ?: "📍", fontSize = 20.sp)
                     Column {
-                        Text(selected, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
-                        Text(item?.hint ?: "", fontSize = 11.sp, color = TextSecondary)
+                        Text(translatedDistrictName(selected), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                        Text(translatedDistrictHint(selected), fontSize = 11.sp, color = TextSecondary)
                     }
                 }
             }
@@ -117,7 +131,9 @@ fun DistrictPicker(
                 Icons.Outlined.KeyboardArrowDown,
                 contentDescription = null,
                 tint = GreenPrimary,
-                modifier = Modifier.size(20.dp).rotate(chevronRotation)
+                modifier = Modifier
+                    .size(20.dp)
+                    .rotate(chevronRotation)
             )
         }
 
@@ -131,7 +147,7 @@ fun DistrictPicker(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                onSelect(item.name)
+                                onSelect(item.name) // still English — unchanged, used by Gemini
                                 expanded = false
                             }
                             .background(if (isSelected) GreenContainer else Color.Transparent)
@@ -145,8 +161,8 @@ fun DistrictPicker(
                         ) {
                             Text(item.emoji, fontSize = 22.sp)
                             Column {
-                                Text(item.name, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
-                                Text(item.hint, fontSize = 11.sp, color = TextSecondary)
+                                Text(translatedDistrictName(item.name), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                                Text(translatedDistrictHint(item.name), fontSize = 11.sp, color = TextSecondary)
                             }
                         }
                         if (isSelected) {
@@ -163,6 +179,7 @@ fun DistrictPicker(
 
 @Composable
 fun MonthPicker(selectedMonth: Int, onSelect: (Int) -> Unit) {
+    val monthShort = stringArrayResource(R.array.month_short_names)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -175,7 +192,11 @@ fun MonthPicker(selectedMonth: Int, onSelect: (Int) -> Unit) {
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
                     .background(if (isSelected) GreenPrimary else WhitePure)
-                    .border(1.dp, if (isSelected) GreenPrimary else OutlineGreen, RoundedCornerShape(12.dp))
+                    .border(
+                        1.dp,
+                        if (isSelected) GreenPrimary else OutlineGreen,
+                        RoundedCornerShape(12.dp)
+                    )
                     .clickable { onSelect(m) }
                     .padding(horizontal = 12.dp, vertical = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -187,7 +208,7 @@ fun MonthPicker(selectedMonth: Int, onSelect: (Int) -> Unit) {
                     color = if (isSelected) WhitePure else TextPrimary
                 )
                 Text(
-                    "$m",
+                    localizedDigits(text = "$m"),
                     fontSize = 10.sp,
                     color = if (isSelected) WhitePure.copy(alpha = 0.75f) else TextSecondary
                 )
@@ -227,13 +248,13 @@ fun SeasonPicker(
             ) {
                 Text(item.emoji, fontSize = 26.sp)
                 Text(
-                    item.name,
+                    translatedSeasonName(item.name),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = if (isSelected) WhitePure else TextPrimary
                 )
                 Text(
-                    item.months,
+                    translatedSeasonMonths(item.name),
                     fontSize = 10.sp,
                     color = if (isSelected) WhitePure.copy(alpha = 0.75f) else TextSecondary
                 )
@@ -284,13 +305,13 @@ fun SoilPicker(
                         }
                         Column {
                             Text(
-                                item.name,
+                                translatedSoilName(item.name),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = if (isSelected) GreenOnContainer else TextPrimary
                             )
                             Text(
-                                item.trait,
+                                translatedSoilTrait(item.name),
                                 fontSize = 10.sp,
                                 color = TextSecondary,
                                 lineHeight = 13.sp
@@ -304,8 +325,3 @@ fun SoilPicker(
         }
     }
 }
-
-val monthShort = listOf(
-    "Jan","Feb","Mar","Apr","May","Jun",
-    "Jul","Aug","Sep","Oct","Nov","Dec"
-)

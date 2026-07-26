@@ -75,7 +75,7 @@ fun SignUpScreen(
 
     LaunchedEffect(authState.success) {
         if (authState.success == "Account Created Successfully") {
-            navController.navigate(FarmerRoutes.HomeScreen) {
+            navController.navigate(FarmerRoutes.LanguageSelectionScreen) {
                 popUpTo(FarmerRoutes.SignUpScreen) { inclusive = true }
             }
         }

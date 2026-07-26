@@ -46,15 +46,26 @@ import com.sujoy.smartfarm.ui.theme.OutlineGreen
 import com.sujoy.smartfarm.ui.theme.TextPrimary
 import com.sujoy.smartfarm.ui.theme.TextSecondary
 import com.sujoy.smartfarm.ui.theme.WhitePure
+import androidx.compose.ui.res.stringResource
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.R
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedLevel
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedCategory
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedCropName
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.translatedFreeText
 
 @Composable
 fun CropCard(
     crop: Crop,
     meta: CropMeta,
     rank: Int,
+    district: String,    // ← new
+    season: String,
     navController: NavHostController
 ) {
     var expanded by remember { mutableStateOf(false) }
+
+    val cropId = CropIds.getId(crop.cropName) ?: ""
 
     Card(
         onClick = { expanded = !expanded },
@@ -89,7 +100,7 @@ fun CropCard(
                     ) {
                         if (rank == 1) Text("👑", fontSize = 17.sp)
                         else Text(
-                            "#$rank",
+                            "#${localizedDigits("$rank")}",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = GreenOnContainer
@@ -103,13 +114,13 @@ fun CropCard(
                         ) {
                             Text(meta.emoji, fontSize = 18.sp)
                             Text(
-                                crop.cropName,
+                                translatedCropName(crop.cropName),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = TextPrimary
                             )
                         }
-                        Text(meta.category, fontSize = 11.sp, color = TextSecondary)
+                        Text(translatedCategory(crop.category), fontSize = 11.sp, color = TextSecondary)
                     }
                 }
 
@@ -121,7 +132,7 @@ fun CropCard(
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        "${crop.recommendationScore}% match",
+                        localizedDigits(stringResource(R.string.match_suffix, crop.recommendationScore)),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = GreenOnContainer
@@ -141,9 +152,23 @@ fun CropCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                StatPill(icon = "💧", label = meta.waterNeed,    modifier = Modifier.weight(1f))
-                StatPill(icon = "📅", label = meta.growthDays,   modifier = Modifier.weight(1f))
-                StatPill(icon = "📈", label = meta.marketDemand, modifier = Modifier.weight(1f))
+                StatPill(
+                    icon = "💧",
+                    label = translatedLevel(crop.waterRequirement),
+                    modifier = Modifier.weight(1f)
+                )
+
+                StatPill(
+                    icon = "📅",
+                    label = localizedDigits(translatedFreeText(crop.growthDuration)),
+                    modifier = Modifier.weight(1f)
+                )
+
+                StatPill(
+                    icon = "📈",
+                    label = translatedLevel(crop.marketDemand),
+                    modifier = Modifier.weight(1f)
+                )
             }
 
             // ── Expandable details
@@ -152,16 +177,36 @@ fun CropCard(
                     HorizontalDivider(color = GreenContainer, thickness = 1.dp)
                     Spacer(Modifier.height(12.dp))
                     Text(
-                        "Crop details",
+                        stringResource(R.string.crop_details_label),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = TextSecondary
                     )
                     Spacer(Modifier.height(8.dp))
-                    DetailRow(label = "Water requirement", value = meta.waterNeed)
-                    DetailRow(label = "Growth duration",   value = meta.growthDays)
-                    DetailRow(label = "Market demand",     value = meta.marketDemand)
-                    DetailRow(label = "Crop category",     value = meta.category)
+                    DetailRow(
+                        label = stringResource(R.string.water_requirement_label),
+                        value = translatedLevel(crop.waterRequirement)
+                    )
+
+                    DetailRow(
+                        label = stringResource(R.string.growth_duration_label),
+                        value = localizedDigits(translatedFreeText(crop.growthDuration))
+                    )
+
+                    DetailRow(
+                        label = stringResource(R.string.expected_yield_label),
+                        value = localizedDigits(translatedFreeText(crop.expectedYield))
+                    )
+
+                    DetailRow(
+                        label = stringResource(R.string.market_demand_label),
+                        value = translatedLevel(crop.marketDemand)
+                    )
+
+                    DetailRow(
+                        label = stringResource(R.string.crop_category_label),
+                        value = translatedCategory(crop.category)
+                    )
                     Spacer(Modifier.height(4.dp))
                 }
             }
@@ -174,7 +219,7 @@ fun CropCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (expanded) "Collapse" else "View details",
+                    text = if (expanded) stringResource(R.string.collapse_label) else stringResource(R.string.view_details_label),
                     fontSize = 11.sp,
                     color = GreenPrimary,
                     fontWeight = FontWeight.SemiBold
@@ -195,8 +240,9 @@ fun CropCard(
                 onClick = {
                     navController.navigate(
                         FarmerRoutes.MethodSelectionScreen(
-                            cropId   = crop.cropId,
-                            cropName = crop.cropName
+                            cropId   = cropId,
+                            cropName = crop.cropName,
+                            district, season
                         )
                     )
                 },
@@ -208,7 +254,7 @@ fun CropCard(
                 )
             ) {
                 Text(
-                    text = "Select farming method →",
+                    text = stringResource(R.string.select_farming_method_btn),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -217,3 +263,51 @@ fun CropCard(
     }
 }
 
+object CropIds {
+
+    private val ids = mapOf(
+
+        "rice" to "rice",
+        "paddy" to "rice",
+
+        "jute" to "jute",
+
+        "potato" to "potato",
+
+        "mustard" to "mustard",
+
+        "wheat" to "wheat",
+
+        "maize" to "maize",
+
+        "sunflower" to "sunflower",
+
+        "groundnut" to "groundnut",
+
+        "sugarcane" to "sugarcane",
+
+        "tomato" to "tomato",
+
+        "brinjal" to "brinjal",
+
+        "onion" to "onion",
+
+        "cabbage" to "cabbage",
+
+        "cauliflower" to "cauliflower",
+
+        "chilli" to "chilli",
+
+        "boro" to "rice",
+
+        "aman" to "rice",
+
+        "aus" to "rice"
+    )
+
+    fun getId(cropName: String): String? {
+        return ids.entries.firstOrNull {
+            cropName.contains(it.key, ignoreCase = true)
+        }?.value
+    }
+}

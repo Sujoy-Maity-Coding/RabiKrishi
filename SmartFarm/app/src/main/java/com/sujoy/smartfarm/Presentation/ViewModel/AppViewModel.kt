@@ -1,5 +1,6 @@
 package com.sujoy.smartfarm.Presentation.ViewModel
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,17 +11,21 @@ import com.sujoy.smartfarm.Domain.UseCase.GetCompletedTasksUseCase
 import com.sujoy.smartfarm.Domain.UseCase.CropMethod.GetCropMethodUseCase
 import com.sujoy.smartfarm.Domain.UseCase.Expense.AddExpenseUseCase
 import com.sujoy.smartfarm.Domain.UseCase.Expense.GetExpensesUseCase
+import com.sujoy.smartfarm.Domain.UseCase.FarmSchedule.GenerateFarmIdUseCase
+import com.sujoy.smartfarm.Domain.UseCase.FarmSchedule.GetFarmScheduleUseCase
+import com.sujoy.smartfarm.Domain.UseCase.GenerateFarmScheduleUseCase
 import com.sujoy.smartfarm.Domain.UseCase.GetCropScheduleUseCase
 import com.sujoy.smartfarm.Domain.UseCase.GetDailyUpdateUseCase
 import com.sujoy.smartfarm.Domain.UseCase.GetDailyUpdatesUseCase
 import com.sujoy.smartfarm.Domain.UseCase.GetFarmByIdUseCase
+import com.sujoy.smartfarm.Domain.UseCase.GetFarmerProfileUseCase
 import com.sujoy.smartfarm.Domain.UseCase.GetMyFarmsUseCase
-import com.sujoy.smartfarm.Domain.UseCase.GetRecommendedCropsUseCase
 import com.sujoy.smartfarm.Domain.UseCase.IsUserLoggedInUseCase
 import com.sujoy.smartfarm.Domain.UseCase.LoginUseCase
 import com.sujoy.smartfarm.Domain.UseCase.LogoutUseCase
 import com.sujoy.smartfarm.Domain.UseCase.SaveDailyUpdateUseCase
 import com.sujoy.smartfarm.Domain.UseCase.SignUpUseCase
+import com.sujoy.smartfarm.Domain.UseCase.UpdateFarmerProfileUseCase
 import com.sujoy.smartfarm.Domain.UseCase.UpdateTaskStatusUseCase
 import com.sujoy.smartfarm.Domain.model.DailyFarmUpdate
 import com.sujoy.smartfarm.Domain.model.Expense.Expense
@@ -30,6 +35,7 @@ import com.sujoy.smartfarm.Domain.model.TaskItem
 import com.sujoy.smartfarm.Presentation.State.AnalyzeCrop.LatestAIState
 import com.sujoy.smartfarm.Presentation.State.AuthState
 import com.sujoy.smartfarm.Presentation.State.CompletedTasksState
+import com.sujoy.smartfarm.Presentation.State.ContinueScheduleState
 import com.sujoy.smartfarm.Presentation.State.RecomMethodCreate.CreateFarmState
 import com.sujoy.smartfarm.Presentation.State.CropHealthHistoryState
 import com.sujoy.smartfarm.Presentation.State.CropHistory.CropHistoryState
@@ -39,12 +45,17 @@ import com.sujoy.smartfarm.Presentation.State.CropUpdateDetailsState
 import com.sujoy.smartfarm.Presentation.State.Expense.AddExpenseState
 import com.sujoy.smartfarm.Presentation.State.Expense.ExpenseListState
 import com.sujoy.smartfarm.Presentation.State.FarmDetailsState
+import com.sujoy.smartfarm.Presentation.State.ProfileState
 import com.sujoy.smartfarm.Presentation.State.RecomMethodCreate.MyFarmsState
 import com.sujoy.smartfarm.Presentation.State.RecomMethodCreate.RecommendationState
 import com.sujoy.smartfarm.Presentation.State.SaveDailyUpdateState
 import com.sujoy.smartfarm.Presentation.State.TaskUpdateState
+import com.sujoy.smartfarm.Presentation.State.UpdateProfileState
+import com.sujoy.smartfarm.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -61,9 +72,6 @@ class AppViewModel @Inject constructor(
 
     private val logoutUseCase:
     LogoutUseCase,
-
-    private val getRecommendedCropsUseCase:
-    GetRecommendedCropsUseCase,
 
     private val getCropMethodUseCase:
     GetCropMethodUseCase,
@@ -95,7 +103,14 @@ class AppViewModel @Inject constructor(
     private val addExpenseUseCase: AddExpenseUseCase,
 
     private val getExpensesUseCase: GetExpensesUseCase,
-    ) : ViewModel() {
+
+    private val getFarmerProfileUseCase: GetFarmerProfileUseCase,
+    private val updateFarmerProfileUseCase: UpdateFarmerProfileUseCase,
+    private val generateFarmScheduleUseCase: GenerateFarmScheduleUseCase,
+    private val generateFarmIdUseCase: GenerateFarmIdUseCase,
+    private val getFarmScheduleUseCase: GetFarmScheduleUseCase,
+    @ApplicationContext private val context: Context
+) : ViewModel() {
     private val _authState =
 
         MutableStateFlow(
@@ -104,6 +119,12 @@ class AppViewModel @Inject constructor(
 
     val authState =
         _authState.asStateFlow()
+
+    private val _profileState = MutableStateFlow(ProfileState())
+    val profileState = _profileState.asStateFlow()
+
+    private val _updateProfileState = MutableStateFlow(UpdateProfileState())
+    val updateProfileState = _updateProfileState.asStateFlow()
 
     private val _recommendationState =
 
@@ -226,6 +247,9 @@ class AppViewModel @Inject constructor(
     val expenseListState =
         _expenseListState.asStateFlow()
 
+    private val _continueScheduleState = MutableStateFlow(ContinueScheduleState())
+    val continueScheduleState: StateFlow<ContinueScheduleState> = _continueScheduleState
+
     fun signUp(
 
         farmerData: FarmerData,
@@ -336,6 +360,30 @@ class AppViewModel @Inject constructor(
         }
     }
 
+    fun getFarmerProfile() {
+        viewModelScope.launch {
+            getFarmerProfileUseCase().collect {
+                when (it) {
+                    is ResultState.Loading -> _profileState.value = ProfileState(isLoading = true)
+                    is ResultState.Success -> _profileState.value = ProfileState(farmer = it.data)
+                    is ResultState.Error   -> _profileState.value = ProfileState(error = it.message)
+                }
+            }
+        }
+    }
+
+    fun updateFarmerProfile(name: String, phoneNumber: String) {
+        viewModelScope.launch {
+            updateFarmerProfileUseCase(name, phoneNumber).collect {
+                when (it) {
+                    is ResultState.Loading -> _updateProfileState.value = UpdateProfileState(isLoading = true)
+                    is ResultState.Success -> _updateProfileState.value = UpdateProfileState(success = it.data)
+                    is ResultState.Error   -> _updateProfileState.value = UpdateProfileState(error = it.message)
+                }
+            }
+        }
+    }
+
     fun isUserLoggedIn(): Boolean {
 
         return isUserLoggedInUseCase()
@@ -346,68 +394,11 @@ class AppViewModel @Inject constructor(
         logoutUseCase()
     }
 
-    fun getRecommendations(
-
-        district: String,
-
-        month: Int,
-
-        season: String,
-
-        soilType: String
-
-    ) {
-
-        viewModelScope.launch {
-
-            getRecommendedCropsUseCase(
-
-                district,
-
-                month,
-
-                season,
-
-                soilType
-
-            ).collect {
-
-                when (it) {
-
-                    is ResultState.Loading -> {
-
-                        _recommendationState.value =
-
-                            RecommendationState(
-                                isLoading = true
-                            )
-                    }
-
-                    is ResultState.Success -> {
-
-                        _recommendationState.value =
-
-                            RecommendationState(
-                                crops = it.data
-                            )
-                    }
-
-                    is ResultState.Error -> {
-
-                        _recommendationState.value =
-
-                            RecommendationState(
-                                error = it.message
-                            )
-                    }
-                }
-            }
-        }
-    }
-
     fun getCropMethod(
 
-        cropId: String
+        cropId: String,
+
+        languageCode: String
 
     ) {
 
@@ -415,7 +406,8 @@ class AppViewModel @Inject constructor(
 
             getCropMethodUseCase(
 
-                cropId
+                cropId,
+                languageCode
 
             ).collect {
 
@@ -452,47 +444,112 @@ class AppViewModel @Inject constructor(
         }
     }
 
+//    fun createFarm(
+//
+//        farm: Farm
+//
+//    ) {
+//
+//        viewModelScope.launch {
+//
+//            createFarmUseCase(
+//
+//                farm
+//
+//            ).collect {
+//
+//                when (it) {
+//
+//                    is ResultState.Loading -> {
+//
+//                        _createFarmState.value =
+//
+//                            CreateFarmState(
+//                                isLoading = true
+//                            )
+//                    }
+//
+//                    is ResultState.Success -> {
+//
+//                        _createFarmState.value =
+//
+//                            CreateFarmState(
+//                                success = it.data
+//                            )
+//                    }
+//
+//                    is ResultState.Error -> {
+//
+//                        _createFarmState.value =
+//
+//                            CreateFarmState(
+//                                error = it.message
+//                            )
+//                    }
+//                }
+//            }
+//        }
+//    }
+
     fun createFarm(
 
-        farm: Farm
+        farm: Farm,
+        district: String,
+        season: String,
+        languageCode: String
 
     ) {
 
         viewModelScope.launch {
 
-            createFarmUseCase(
+            _createFarmState.value = CreateFarmState(isLoading = true)
 
-                farm
+            val farmId = generateFarmIdUseCase()
 
-            ).collect {
+            val farmWithId = farm.copy(
+                farmId = farmId,
+                district = district,
+                season = season
+            )
+
+            val phaseResult = generateFarmScheduleUseCase.generateInitialPhase(
+
+                farmId = farmId,
+                cropId = farmWithId.cropId,
+                cropName = farmWithId.cropName,
+                farmingMethod = farmWithId.farmingMethod,
+                district = district,
+                season = season,
+                farmSize = farmWithId.aiEstimatedFarmSize,
+                languageCode = languageCode
+
+            )
+
+            if (phaseResult.isFailure) {
+
+                _createFarmState.value = CreateFarmState(
+                    error = phaseResult.exceptionOrNull()?.message
+                        ?: context.getString(R.string.app_err_failed_prepare_schedule)
+                )
+
+                return@launch
+
+            }
+
+            createFarmUseCase(farmWithId).collect {
 
                 when (it) {
 
                     is ResultState.Loading -> {
-
-                        _createFarmState.value =
-
-                            CreateFarmState(
-                                isLoading = true
-                            )
+                        _createFarmState.value = CreateFarmState(isLoading = true)
                     }
 
                     is ResultState.Success -> {
-
-                        _createFarmState.value =
-
-                            CreateFarmState(
-                                success = it.data
-                            )
+                        _createFarmState.value = CreateFarmState(success = it.data)
                     }
 
                     is ResultState.Error -> {
-
-                        _createFarmState.value =
-
-                            CreateFarmState(
-                                error = it.message
-                            )
+                        _createFarmState.value = CreateFarmState(error = it.message)
                     }
                 }
             }
@@ -542,7 +599,8 @@ class AppViewModel @Inject constructor(
 
     fun getCropSchedule(
 
-        cropId: String
+        cropId: String,
+        languageCode: String
 
     ) {
 
@@ -550,7 +608,7 @@ class AppViewModel @Inject constructor(
 
             getCropScheduleUseCase(
 
-                cropId
+                cropId,languageCode
 
             ).collect {
 
@@ -1082,6 +1140,95 @@ class AppViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun getFarmSchedule(farmId: String) {
+
+        viewModelScope.launch {
+
+            getFarmScheduleUseCase(farmId).collect {
+
+                when (it) {
+
+                    is ResultState.Loading -> {
+                        _cropScheduleState.value = CropScheduleState(isLoading = true)
+                    }
+
+                    is ResultState.Success -> {
+                        _cropScheduleState.value = CropScheduleState(schedule = it.data)
+                    }
+
+                    is ResultState.Error -> {
+                        _cropScheduleState.value = CropScheduleState(error = it.message)
+                    }
+                }
+            }
+        }
+    }
+
+    fun continueSchedule(
+
+        farmId: String,
+        languageCode: String
+
+    ) {
+
+        viewModelScope.launch {
+
+            _continueScheduleState.value = ContinueScheduleState(isLoading = true)
+
+            val farm = farmDetailsState.value.farm
+
+            if (farm == null) {
+
+                _continueScheduleState.value = ContinueScheduleState(
+                    error = context.getString(R.string.app_err_farm_not_loaded)
+                )
+
+                return@launch
+
+            }
+
+            val result = generateFarmScheduleUseCase.generateNextPhase(
+
+                farmId = farmId,
+                cropId = farm.cropId,
+                cropName = farm.cropName,
+                farmingMethod = farm.farmingMethod,
+                district = farm.district,
+                season = farm.season,
+                farmSize = farm.aiEstimatedFarmSize,
+                languageCode = languageCode
+
+            )
+
+            if (result.isSuccess) {
+
+                _continueScheduleState.value = ContinueScheduleState(success = true)
+
+                // Refresh the displayed schedule so the newly appended phase shows up
+                getFarmSchedule(farmId)
+
+            } else {
+
+                _continueScheduleState.value = ContinueScheduleState(
+                    error = result.exceptionOrNull()?.message ?: context.getString(R.string.app_err_failed_generate_next_phase)
+                )
+
+            }
+        }
+    }
+
+    fun checkScheduleComplete(farmId: String, cropId: String) {
+
+        viewModelScope.launch {
+
+            val complete = generateFarmScheduleUseCase.isScheduleComplete(farmId, cropId)
+
+            _continueScheduleState.value = _continueScheduleState.value.copy(
+                isComplete = complete
+            )
+        }
     }
 
 }

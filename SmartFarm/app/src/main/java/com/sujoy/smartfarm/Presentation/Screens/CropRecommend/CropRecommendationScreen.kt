@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +48,7 @@ import com.sujoy.smartfarm.Presentation.Navigation.FarmerRoutes
 import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.districtItems
 import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.seasonItems
 import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.soilItems
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
 import com.sujoy.smartfarm.ui.theme.OffWhite
 import com.sujoy.smartfarm.ui.theme.WhitePure
@@ -66,7 +68,7 @@ fun CropRecommendationScreen(navController: NavHostController) {
         containerColor = OffWhite,
         topBar = {
             FarmTopBar(
-                title = "Crop recommendation",
+                title = stringResource(R.string.crop_reco_title),
                 showBack = true,
                 onBack = { navController.popBackStack() }
             )
@@ -106,13 +108,13 @@ fun CropRecommendationScreen(navController: NavHostController) {
                     }
                     Column {
                         Text(
-                            "Tell us about your farm",
+                            stringResource(R.string.crop_reco_hero_title),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = WhitePure
                         )
                         Text(
-                            "4 quick details → personalised crop list",
+                            stringResource(R.string.crop_reco_hero_subtitle),
                             fontSize = 11.sp,
                             color = WhitePure.copy(alpha = 0.75f),
                             modifier = Modifier.padding(top = 2.dp)
@@ -123,7 +125,12 @@ fun CropRecommendationScreen(navController: NavHostController) {
 
             // ── Step indicator
             StepRow(
-                steps = listOf("District", "Month", "Season", "Soil"),
+                steps = listOf(
+                    stringResource(R.string.step_district),
+                    stringResource(R.string.step_month),
+                    stringResource(R.string.step_season),
+                    stringResource(R.string.step_soil)
+                ),
                 completed = listOf(
                     district.isNotEmpty(),
                     true,
@@ -133,7 +140,7 @@ fun CropRecommendationScreen(navController: NavHostController) {
             )
 
             // ── District picker
-            SectionLabel(icon = Icons.Outlined.LocationOn, label = "Your district")
+            SectionLabel(icon = Icons.Outlined.LocationOn, label = stringResource(R.string.label_your_district))
             DistrictPicker(
                 items = districtItems,
                 selected = district,
@@ -141,11 +148,11 @@ fun CropRecommendationScreen(navController: NavHostController) {
             )
 
             // ── Month picker
-            SectionLabel(icon = Icons.Outlined.DateRange, label = "Planting month")
+            SectionLabel(icon = Icons.Outlined.DateRange, label = stringResource(R.string.label_planting_month))
             MonthPicker(selectedMonth = month, onSelect = { month = it })
 
             // ── Season picker
-            SectionLabel(icon = Icons.Outlined.WbSunny, label = "Crop season")
+            SectionLabel(icon = Icons.Outlined.WbSunny, label = stringResource(R.string.label_crop_season))
             SeasonPicker(
                 items = seasonItems,
                 selected = season,
@@ -153,7 +160,7 @@ fun CropRecommendationScreen(navController: NavHostController) {
             )
 
             // ── Soil picker
-            SectionLabel(icon = Icons.Outlined.Landscape, label = "Soil type")
+            SectionLabel(icon = Icons.Outlined.Landscape, label = stringResource(R.string.label_soil_type))
             SoilPicker(
                 items = soilItems,
                 selected = soilType,
@@ -163,7 +170,7 @@ fun CropRecommendationScreen(navController: NavHostController) {
             Spacer(Modifier.height(8.dp))
 
             PrimaryButton(
-                text = if (allFilled) "Get my recommendations →" else "Complete all fields to continue",
+                text = if (allFilled) stringResource(R.string.btn_get_recommendations) else stringResource(R.string.btn_complete_fields),
                 enabled = allFilled,
                 onClick = {
                     navController.navigate(

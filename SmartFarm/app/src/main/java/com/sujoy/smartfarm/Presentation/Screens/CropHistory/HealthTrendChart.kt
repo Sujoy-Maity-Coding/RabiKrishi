@@ -20,9 +20,12 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.R
 import com.sujoy.smartfarm.ui.theme.GreenPrimary
 import com.sujoy.smartfarm.ui.theme.TextPrimary
 import com.sujoy.smartfarm.ui.theme.TextSecondary
@@ -43,7 +46,7 @@ fun HealthTrendChart(
                 Text("📈", fontSize = 16.sp)
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    "Health Trend",
+                    stringResource(R.string.health_trend_title),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary
@@ -51,7 +54,7 @@ fun HealthTrendChart(
             }
             if (scores.isNotEmpty()) {
                 Text(
-                    "Latest: ${scores.last()}",
+                    localizedDigits(stringResource(R.string.latest_score_label, scores.last())),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = GreenPrimary
@@ -67,7 +70,7 @@ fun HealthTrendChart(
                 horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center
             ) {
                 Text(
-                    "Not enough data yet — add another update to see the trend",
+                    stringResource(R.string.not_enough_trend_data),
                     fontSize = 12.sp,
                     color = TextSecondary
                 )

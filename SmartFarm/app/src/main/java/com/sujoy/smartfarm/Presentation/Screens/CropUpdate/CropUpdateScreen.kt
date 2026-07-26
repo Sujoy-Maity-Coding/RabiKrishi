@@ -48,7 +48,6 @@ import android.content.Intent
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.RepeatMode
@@ -58,7 +57,15 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MicOff
+import androidx.compose.ui.platform.LocalConfiguration
 import java.util.Locale
+import androidx.compose.ui.res.stringResource
+import com.sujoy.smartfarm.R
+import com.sujoy.smartfarm.Presentation.Utils.CropRecommend.localizedDigits
+import com.sujoy.smartfarm.Presentation.Utils.FarmDetails.translatedRiskLevel
+import com.sujoy.smartfarm.Presentation.Utils.FarmDetails.translatedSeverity
+import com.sujoy.smartfarm.Presentation.Utils.FarmDetails.translatedLeafColor
+import com.sujoy.smartfarm.Presentation.Utils.FarmDetails.translatedSoilMoisture
 
 // ── Status helpers ──────────────────────────────────────────────────────────
 
@@ -98,11 +105,13 @@ fun CropUpdateScreen(
     var isListening by remember { mutableStateOf(false) }
     val context= LocalContext.current
 
+    val micPermissionMessage = stringResource(R.string.mic_permission_required)
+
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (!isGranted) {
-            Toast.makeText(context, "Microphone permission required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, micPermissionMessage, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -163,6 +172,8 @@ fun CropUpdateScreen(
 
     var selectedLang by remember { mutableStateOf(languages[0]) }
 
+    val currentLangCode = LocalConfiguration.current.locales[0].language
+
     val recognizerIntent = remember(selectedLang) {
         Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
@@ -183,7 +194,7 @@ fun CropUpdateScreen(
             override fun onEndOfSpeech() { isListening = false }
             override fun onError(error: Int) {
                 isListening = false
-                Toast.makeText(context, "Could not understand, try again", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.mic_permission_required), Toast.LENGTH_SHORT).show()
             }
             override fun onResults(results: android.os.Bundle?) {
                 val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
@@ -218,7 +229,7 @@ fun CropUpdateScreen(
         containerColor = OffWhite,
         topBar = {
             FarmTopBar(
-                title = "Crop Health Analysis",
+                title = stringResource(R.string.crop_health_analysis_title),
                 showBack = true,
                 onBack = { navController.popBackStack() }
             )
@@ -249,7 +260,7 @@ fun CropUpdateScreen(
                             contentAlignment = Alignment.Center
                         ) { Text("🌾", fontSize = 32.sp) }
                         CircularProgressIndicator(color = GreenPrimary, strokeWidth = 3.dp)
-                        Text("Loading farm details…", fontSize = 13.sp, color = TextSecondary)
+                        Text(stringResource(R.string.loading_farm_details_ellipsis), fontSize = 13.sp, color = TextSecondary)
                     }
                 }
             }
@@ -269,7 +280,7 @@ fun CropUpdateScreen(
                     ) {
                         Text("⚠️", fontSize = 40.sp)
                         Text(
-                            "Failed to load",
+                            stringResource(R.string.failed_to_load),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
@@ -328,7 +339,7 @@ fun CropUpdateScreen(
                                                 .background(Color(0xFF69F0AE))
                                         )
                                         Text(
-                                            "Day $currentDay",
+                                            localizedDigits(stringResource(R.string.day_label, currentDay)),
                                             fontSize = 10.sp,
                                             color = WhitePure.copy(alpha = 0.8f)
                                         )
@@ -341,7 +352,7 @@ fun CropUpdateScreen(
                                     color = WhitePure
                                 )
                                 Text(
-                                    "${farm.farmName}  •  ${farm.landArea} Acre",
+                                    "${farm.farmName}  •  ${farm.landArea} ${stringResource(R.string.acre_suffix)}",
                                     fontSize = 12.sp,
                                     color = WhitePure.copy(alpha = 0.75f)
                                 )
@@ -359,7 +370,7 @@ fun CropUpdateScreen(
                                 )
                                 Spacer(Modifier.height(4.dp))
                                 Text(
-                                    "${(currentDay / 120f * 100).toInt().coerceIn(0, 100)}% of crop cycle completed",
+                                    localizedDigits(stringResource(R.string.crop_cycle_completed, (currentDay / 120f * 100).toInt().coerceIn(0, 100))),
                                     fontSize = 10.sp,
                                     color = WhitePure.copy(alpha = 0.85f)
                                 )
@@ -381,7 +392,7 @@ fun CropUpdateScreen(
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Text(
-                                    "Rice Leaf Image",
+                                    stringResource(R.string.rice_leaf_image_label),
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = TextPrimary
@@ -423,7 +434,7 @@ fun CropUpdateScreen(
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Text(
-                                        if (selectedImageUri == null) "Select Rice Leaf Image" else "Change Image",
+                                        if (selectedImageUri == null) stringResource(R.string.select_rice_leaf_image) else stringResource(R.string.change_image_label),
                                         color = WhitePure,
                                         fontWeight = FontWeight.SemiBold,
                                         fontSize = 13.sp
@@ -446,7 +457,7 @@ fun CropUpdateScreen(
                                 ) {
                                     CircularProgressIndicator(color = GreenPrimary, strokeWidth = 3.dp)
                                     Text(
-                                        "Analyzing crop using Gemini AI…",
+                                        stringResource(R.string.analyzing_with_gemini),
                                         fontSize = 13.sp,
                                         color = TextSecondary
                                     )
@@ -459,7 +470,7 @@ fun CropUpdateScreen(
                     item {
                         SectionCard {
                             Text(
-                                "👨‍🌾 Farmer Observation",
+                                stringResource(R.string.farmer_observation_title),
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = TextPrimary
@@ -470,7 +481,7 @@ fun CropUpdateScreen(
                             OutlinedTextField(
                                 value = plantHeight,
                                 onValueChange = { plantHeight = it },
-                                label = { Text("Plant Height (cm)") },
+                                label = { Text(stringResource(R.string.plant_height_label)) },
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp),
                                 colors = farmFieldColors()
@@ -503,10 +514,10 @@ fun CropUpdateScreen(
                                 OutlinedTextField(
                                     value = farmerNote,
                                     onValueChange = { farmerNote = it },
-                                    label = { Text("Farmer Note") },
+                                    label = { Text(stringResource(R.string.farmer_note_label)) },
                                     placeholder = {
                                         Text(
-                                            "Tap mic to speak or type here…",
+                                            stringResource(R.string.farmer_note_placeholder),
                                             color = TextSecondary.copy(alpha = 0.5f),
                                             fontSize = 12.sp
                                         )
@@ -529,7 +540,7 @@ fun CropUpdateScreen(
                                                     Icons.Outlined.MicOff
                                                 else
                                                     Icons.Outlined.Mic,
-                                                contentDescription = "Voice input",
+                                                contentDescription = stringResource(R.string.voice_input_desc),
                                                 tint = if (isListening) Color(0xFFC62828) else GreenPrimary
                                             )
                                         }
@@ -565,7 +576,7 @@ fun CropUpdateScreen(
                                                 .background(Color(0xFFC62828).copy(alpha = pulse))
                                         )
                                         Text(
-                                            "Listening… speak now",
+                                            stringResource(R.string.listening_speak_now),
                                             fontSize = 12.sp,
                                             color = Color(0xFFC62828),
                                             fontWeight = FontWeight.SemiBold
@@ -578,7 +589,7 @@ fun CropUpdateScreen(
                                             },
                                             contentPadding = PaddingValues(0.dp)
                                         ) {
-                                            Text("Stop", fontSize = 11.sp, color = Color(0xFFC62828))
+                                            Text(stringResource(R.string.stop_label), fontSize = 11.sp, color = Color(0xFFC62828))
                                         }
                                     }
                                 }
@@ -590,7 +601,7 @@ fun CropUpdateScreen(
                                         contentPadding = PaddingValues(0.dp),
                                         modifier = Modifier.align(Alignment.End)
                                     ) {
-                                        Text("Clear note", fontSize = 11.sp, color = TextSecondary)
+                                        Text(stringResource(R.string.clear_note_label), fontSize = 11.sp, color = TextSecondary)
                                     }
                                 }
                             }
@@ -598,7 +609,7 @@ fun CropUpdateScreen(
                             Spacer(Modifier.height(20.dp))
 
                             Text(
-                                "Leaf Color",
+                                stringResource(R.string.leaf_color_label),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = TextPrimary
@@ -610,7 +621,7 @@ fun CropUpdateScreen(
                             ) {
                                 leafColors.forEach { color ->
                                     SelectableChip(
-                                        label = color,
+                                        label = translatedLeafColor(color),   // ← display translated, store raw `color`
                                         selected = leafColor == color,
                                         onClick = { leafColor = color }
                                     )
@@ -620,7 +631,7 @@ fun CropUpdateScreen(
                             Spacer(Modifier.height(20.dp))
 
                             Text(
-                                "Soil Moisture",
+                                stringResource(R.string.soil_moisture_label),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = TextPrimary
@@ -632,7 +643,7 @@ fun CropUpdateScreen(
                             ) {
                                 moistureLevels.forEach { moisture ->
                                     SelectableChip(
-                                        label = moisture,
+                                        label = translatedSoilMoisture(moisture),   // ← display translated, store raw `moisture`
                                         selected = soilMoisture == moisture,
                                         onClick = { soilMoisture = moisture }
                                     )
@@ -644,21 +655,21 @@ fun CropUpdateScreen(
                             ObservationCheckRow(
                                 checked = pestFound,
                                 onCheckedChange = { pestFound = it },
-                                label = "Pest Found",
+                                label = stringResource(R.string.pest_found_label),
                                 emoji = "🐛"
                             )
                             Spacer(Modifier.height(6.dp))
                             ObservationCheckRow(
                                 checked = floweringStarted,
                                 onCheckedChange = { floweringStarted = it },
-                                label = "Flowering Started",
+                                label = stringResource(R.string.flowering_started_label),
                                 emoji = "🌸"
                             )
                             Spacer(Modifier.height(6.dp))
                             ObservationCheckRow(
                                 checked = fruitStarted,
                                 onCheckedChange = { fruitStarted = it },
-                                label = "Fruit Started",
+                                label = stringResource(R.string.fruit_started_label),
                                 emoji = "🌾"
                             )
                         }
@@ -695,7 +706,8 @@ fun CropUpdateScreen(
                                         pestFound = pestFound,
                                         floweringStarted = floweringStarted,
                                         fruitStarted = fruitStarted,
-                                        farmerNote = farmerNote
+                                        farmerNote = farmerNote,
+                                        languageCode = currentLangCode
                                     )
 
                                     geminiViewModel.analyzeCrop(request)
@@ -713,10 +725,10 @@ fun CropUpdateScreen(
                                         strokeWidth = 2.dp,
                                         color = WhitePure
                                     )
-                                    Text("Analyzing…", color = WhitePure, fontWeight = FontWeight.SemiBold)
+                                    Text(stringResource(R.string.analyzing_ellipsis), color = WhitePure, fontWeight = FontWeight.SemiBold)
                                 } else {
                                     Text(
-                                        "Analyze Crop",
+                                        stringResource(R.string.analyze_crop_btn),
                                         color = WhitePure,
                                         fontWeight = FontWeight.SemiBold,
                                         fontSize = 14.sp
@@ -751,7 +763,7 @@ fun CropUpdateScreen(
                         item {
                             SectionCard {
                                 Text(
-                                    "🤖 AI Analysis",
+                                    stringResource(R.string.ai_analysis_title),
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = TextPrimary
@@ -764,14 +776,14 @@ fun CropUpdateScreen(
                                 ) {
                                     InfoTile(
                                         emoji = "🦠",
-                                        label = "Disease",
-                                        value = result.diseaseName.ifBlank { "None detected" },
+                                        label = stringResource(R.string.disease_label),
+                                        value = result.diseaseName.ifBlank { stringResource(R.string.none_detected) },
                                         modifier = Modifier.weight(1f)
                                     )
                                     InfoTile(
                                         emoji = "🎯",
-                                        label = "Confidence",
-                                        value = "${result.confidence}%",
+                                        label = stringResource(R.string.confidence_label),
+                                        value = localizedDigits("${result.confidence}%"),
                                         modifier = Modifier.weight(1f)
                                     )
                                 }
@@ -784,14 +796,14 @@ fun CropUpdateScreen(
                                 ) {
                                     InfoTile(
                                         emoji = "💚",
-                                        label = "Health Score",
-                                        value = "${result.healthScore}/100",
+                                        label = stringResource(R.string.health_score_label),
+                                        value = localizedDigits("${result.healthScore}/100"),
                                         modifier = Modifier.weight(1f)
                                     )
                                     InfoTile(
                                         emoji = riskEmoji(result.riskLevel),
-                                        label = "Risk Level",
-                                        value = result.riskLevel.ifBlank { "--" },
+                                        label = stringResource(R.string.risk_level_label),
+                                        value = if (result.riskLevel.isBlank()) stringResource(R.string.risk_level_placeholder) else translatedRiskLevel(result.riskLevel),
                                         valueColor = riskColor(result.riskLevel),
                                         modifier = Modifier.weight(1f)
                                     )
@@ -801,8 +813,8 @@ fun CropUpdateScreen(
                                     Spacer(Modifier.height(10.dp))
                                     InfoTile(
                                         emoji = "📊",
-                                        label = "Severity",
-                                        value = result.severity,
+                                        label = stringResource(R.string.severity_label),
+                                        value = translatedSeverity(result.severity),
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                 }
@@ -825,7 +837,7 @@ fun CropUpdateScreen(
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Text(
-                                        "AI Recommendations",
+                                        stringResource(R.string.ai_recommendations_title),
                                         fontSize = 15.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = TextPrimary
@@ -834,12 +846,12 @@ fun CropUpdateScreen(
 
                                 Spacer(Modifier.height(14.dp))
 
-                                RecommendationRow("🌿", "Organic Treatment", result.organicTreatment)
-                                RecommendationRow("🧪", "Chemical Treatment", result.chemicalTreatment)
-                                RecommendationRow("💊", "Recommended Medicine", result.recommendedMedicine)
-                                RecommendationRow("📦", "Medicine Quantity", result.medicineQuantity)
-                                RecommendationRow("💧", "Irrigation Advice", result.irrigationAdvice)
-                                RecommendationRow("🌱", "Fertilizer Advice", result.fertilizerAdvice, isLast = true)
+                                RecommendationRow("🌿", stringResource(R.string.label_organic_treatment), result.organicTreatment)
+                                RecommendationRow("🧪", stringResource(R.string.label_chemical_treatment), result.chemicalTreatment)
+                                RecommendationRow("💊", stringResource(R.string.label_recommended_medicine), result.recommendedMedicine)
+                                RecommendationRow("📦", stringResource(R.string.label_medicine_quantity), result.medicineQuantity)
+                                RecommendationRow("💧", stringResource(R.string.label_irrigation_advice), result.irrigationAdvice)
+                                RecommendationRow("🌱", stringResource(R.string.label_fertilizer_advice), result.fertilizerAdvice, isLast = true)
                             }
                         }
                     }
@@ -860,7 +872,7 @@ fun CropUpdateScreen(
                                             modifier = Modifier.size(18.dp)
                                         )
                                         Text(
-                                            "Today's Tasks",
+                                            stringResource(R.string.todays_tasks_label),
                                             fontSize = 15.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = TextPrimary
@@ -914,7 +926,7 @@ fun CropUpdateScreen(
                                             modifier = Modifier.size(18.dp)
                                         )
                                         Text(
-                                            "Preventive Tips",
+                                            stringResource(R.string.preventive_tips_plain),
                                             fontSize = 15.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = TextPrimary
@@ -965,7 +977,7 @@ fun CropUpdateScreen(
                                     if (result.nextInspectionDays > 0) {
                                         Spacer(Modifier.height(10.dp))
                                         Text(
-                                            "🔍 Next inspection recommended in ${result.nextInspectionDays} day(s)",
+                                            localizedDigits(stringResource(R.string.next_inspection_recommended, result.nextInspectionDays)),
                                             fontSize = 11.sp,
                                             color = TextSecondary
                                         )
@@ -1092,11 +1104,11 @@ fun CropUpdateScreen(
 
                                     Spacer(Modifier.width(8.dp))
 
-                                    Text("Saving...")
+                                    Text(stringResource(R.string.saving_label))
 
                                 } else {
 
-                                    Text("Save Analysis")
+                                    Text(stringResource(R.string.save_analysis_btn))
 
                                 }
 
